@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Focused correctness checks for the basic-equity-v1 estimator and pot model."""
+"""Focused correctness checks for the equity estimator and pot model."""
 import argparse
 from dataclasses import replace
 import json
@@ -68,6 +68,28 @@ try:
         assert len(sample_calls) > before
         assert all(n == 52 - len(blocked_cards) for n, _ in sample_calls[before:])
     checks.append(f'hero cards, board and own discard excluded across {len(sample_calls)} sampled worlds; no duplicated draws')
+finally:
+    module.random.Random = real_random
+
+# Public cards must constrain an opponent's hand, not just be removed from the
+# deck. An exposed ten makes the opponent's royal unbeatable on this board.
+public_board = ('As', 'Ks', 'Qs', 'Js', '9d')
+assert module.equities(('2c', '3d'), public_board, 1, exposed=(('Ts',),)) == (0.0,)
+assert module.equities(('Ts', '2c'), public_board, 1, exposed=(('9c',),)) == (1.0,)
+checks.append('opponent exposed nut card fixes equity at zero; hero nuts remain one')
+
+# Public cards from folded seats stay dead. Hero exposures may also be supplied
+# in dead_public; deduplication must not remove an extra unknown card.
+try:
+    module.random.Random = AuditedRandom
+    cards, board, discarded = ('Ah', 'Kh'), ('Qh', 'Jh', '9d'), ('4c',)
+    exposed, dead_public = (('2s',),), ('2s', '4d', '3c', 'Ah')
+    blocked_cards = {module._CARD[x] for x in (*cards, *board, *discarded, *dead_public)}
+    before = len(sample_calls)
+    module.equities(cards, board, 1, discarded, exposed, dead_public)
+    calls = sample_calls[before:]
+    assert calls and all(n == 52 - len(blocked_cards) and k == 3 for n, k in calls), calls
+    checks.append('live/folded public cards and own discard excluded; one opponent card plus two board cards sampled')
 finally:
     module.random.Random = real_random
 

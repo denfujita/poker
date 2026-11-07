@@ -1,16 +1,16 @@
-# Basic equity poker bot
+# Public-card-aware equity poker bot
 
-A small Monte Carlo equity and pot-odds baseline for the NO LIMIT Bay Area flop-discard-and-reveal variant. The submitted bot is the single file `agent.py`; the `tools/` scripts are local development utilities and must not be included in a bot upload.
+A small Monte Carlo equity and pot-odds strategy for the NO LIMIT Bay Area flop-discard-and-reveal variant. The current source is v2 (SHA-256 `30195ac646d64d71b9ec5cb58895b1365d155c1c543163135a3f3725d9b060a4`). The submitted bot is the single file `agent.py`; the `tools/` scripts are local development utilities and must not be included in a bot upload.
 
 ## Strategy
 
 - Start with three private cards. After the flop, compare all three possible retained pairs using shared simulated runouts and keep the pair with the highest average equity.
 - Expose the lower-ranked retained card as a simple information heuristic.
-- Sample 32–48 possible showdowns against the active/all-in opponents, splitting tied pots correctly and excluding all known own cards, including the discard.
+- Sample 32–48 possible showdowns against the active/all-in opponents, splitting tied pots correctly. Fix each live opponent’s exposed card in their simulated hand, and exclude all public cards and the bot’s own cards/discard from the remaining deck, including exposed cards belonging to folded opponents.
 - Use estimated chip EV for calls, free checks, and one legal half-pot value-raise size. Calls are capped by the stack and eligible pots account for short stacks.
 - Apply a modest caution margin after repeated current-street raises or large bets. State is local to a decision; the bot does not learn across tables.
 
-This is a deliberately simple chip-EV heuristic, not a GTO or ICM solution. Opponents are modeled as random two-card hands; their exposed cards, discard skill, and inferred ranges are not used. The raise model assumes live opponents continue and assigns no fold equity. Preflop it estimates the best fixed retained pair rather than valuing every later selection opportunity.
+This is a deliberately simple chip-EV heuristic, not a GTO or ICM solution. Unknown opponent cards are sampled uniformly, conditional on exposed cards. Opponent discard skill and action-conditioned ranges are not modeled; the action-pressure caution margin is only a heuristic. The raise model assumes live opponents continue and assigns no fold equity. Preflop it estimates the best fixed retained pair rather than valuing every later selection opportunity.
 
 ## Setup
 
@@ -66,7 +66,9 @@ Use the same seed and opponent ordering to compare versions, then calculate unce
 
 Default bots are intentionally weak. Scores against them are diagnostic benchmarks, not a forecast of performance against the tournament field.
 
-## Recorded benchmark results
+## Recorded benchmark results (historical v1)
+
+These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current v2 source. See [v2 validation](validation/v2.md) for correctness and runtime checks.
 
 The initial batch ran 200 eight-player tables per scenario, with the same mixed-field seeds and seating used for the original-template comparison:
 

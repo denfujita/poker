@@ -1,8 +1,7 @@
 """A small equity / pot-odds baseline for the Bay Area discard-and-reveal variant.
 
-This is a chip-EV heuristic, not a GTO or ICM solver. Opponents have uniformly
-random two-card hands; their exposed cards and discard-selection skill are not
-modeled. Repeated raises add a conservative margin, not an inferred posterior.
+This is a chip-EV heuristic, not a GTO or ICM solver. Opponent exposed cards are fixed; unknown cards are sampled without replacement.
+Folded public cards and our discard are removed. Repeated raises add a conservative margin, not an inferred posterior.
 All game-dependent work is local to a decision; no cross-table state is kept.
 """
 
@@ -22,7 +21,7 @@ _EVALUATE = eval7.evaluate
 _EVALUATE(list(_DECK[:7]))
 
 
-def equities(cards, board, opponents, discarded=()):
+def equities(cards, board, opponents, discarded=(), exposed=(), dead_public=(), ranges=()):
     """Return showdown pot shares for each possible discard (or the sole pair).
 
 For three cards, result[i] is equity after discarding original card i. Choose
@@ -36,7 +35,9 @@ to change our selection after seeing the flop. Ties split among all winners.
     hands = ((hole[1], hole[2]), (hole[0], hole[2]), (hole[0], hole[1])) if len(hole) == 3 else (hole,)
     if opponents == 0:
         return (1.0,) * len(hands)
-    blocked = set(hole + community + dead)
+    fixed = tuple(tuple(_CARD[c] for c in xs) for xs in exposed) if exposed else ((),) * opponents
+    blocked = set(hole + community + dead + tuple(_CARD[c] for c in dead_public))
+    for known in fixed: blocked.update(known)
     deck = [card for card in _DECK if card not in blocked]
     # Per-state deterministic sampling: reproducible across processes and no
     # mutable global RNG, caches, or information carried between tables.
@@ -46,16 +47,18 @@ to change our selection after seeing the flop. Ties split among all winners.
     seed ^= opponents * 104729
     sample = random.Random(seed).sample
     missing = 5 - len(community)
-    draws = missing + 2 * opponents
+    draws = missing + sum(2 - len(k) for k in fixed)
     samples = 48 if opponents <= 3 else 32
     totals = [0.0] * len(hands)
     for _ in range(samples):
         picked = sample(deck, draws)
         completed = community + tuple(picked[:missing])
-        scores = [
-            _EVALUATE(completed + (picked[missing + 2 * j], picked[missing + 2 * j + 1]))
-            for j in range(opponents)
-        ]
+        scores = []
+        at = missing
+        for known in fixed:
+            need = 2 - len(known)
+            enemy = known + tuple(picked[at:at + need]); at += need
+            scores.append(_EVALUATE(completed + enemy))
         best = max(scores)
         for i, hand in enumerate(hands):
             value = _EVALUATE(completed + hand)
@@ -120,7 +123,7 @@ def decide(state: GameState) -> Action:
         first = state.legal_actions[0]
         return Action(first.kind, first.min_amount)
 
-    values = equities(state.cards, state.board, len(live), state.variant.get("discarded", ()))
+    values = equities(state.cards, state.board, len(live), state.variant.get("discarded", ()), tuple(tuple(s.shown_cards) for s in live), tuple(c for s in state.seats for c in s.shown_cards))
     if state.phase == "select":
         discard = max(range(3), key=lambda index: values[index])
         retained = [index for index in range(3) if index != discard]
