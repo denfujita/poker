@@ -1,16 +1,17 @@
-# Public-card-aware equity poker bot
+# Action-aware equity poker bot
 
-A small Monte Carlo equity and pot-odds strategy for the NO LIMIT Bay Area flop-discard-and-reveal variant. The current source is v2 (SHA-256 `30195ac646d64d71b9ec5cb58895b1365d155c1c543163135a3f3725d9b060a4`). The submitted bot is the single file `agent.py`; the `tools/` scripts are local development utilities and must not be included in a bot upload.
+A small Monte Carlo equity and pot-odds strategy for the NO LIMIT Bay Area flop-discard-and-reveal variant. The current source is v3 (SHA-256 `2a831f886d03232967bc826ee25a6ad013797c9810308e970ace229601f650cd`). The submitted bot is the single file `agent.py`; the `tools/` scripts are local development utilities and must not be included in a bot upload.
 
 ## Strategy
 
-- Start with three private cards. After the flop, compare all three possible retained pairs using shared simulated runouts and keep the pair with the highest average equity.
+- Start with three private cards. After the flop, compare all three possible retained pairs using shared simulated runouts and keep the pair with the highest average equity. When sampled equities tie exactly, retain the strongest current made hand; a strictly better draw equity remains primary.
 - Expose the lower-ranked retained card as a simple information heuristic.
-- Sample 32–48 possible showdowns against the active/all-in opponents, splitting tied pots correctly. Fix each live opponent’s exposed card in their simulated hand, and exclude all public cards and the bot’s own cards/discard from the remaining deck, including exposed cards belonging to folded opponents.
+- Sample 16–24 possible showdowns against the active/all-in opponents, splitting tied pots correctly. Fix each live opponent’s exposed card in their simulated hand, and exclude all public cards and the bot’s own cards/discard from the remaining deck, including exposed cards belonging to folded opponents.
 - Use estimated chip EV for calls, free checks, and one legal half-pot value-raise size. Calls are capped by the stack and eligible pots account for short stacks.
-- Apply a modest caution margin after repeated current-street raises or large bets. State is local to a decision; the bot does not learn across tables.
+- Weight sampled opponent hands using public calls/raises and bet size relative to the pot before the action. Retain the latest action street and strongest earlier street, using the board visible at each action; stronger aggression favors plausible value hands while leaving weak hands possible.
+- Apply a modest additional caution margin after repeated current-street raises or large bets. State is local to a decision; the bot does not learn across tables.
 
-This is a deliberately simple chip-EV heuristic, not a GTO or ICM solution. Unknown opponent cards are sampled uniformly, conditional on exposed cards. Opponent discard skill and action-conditioned ranges are not modeled; the action-pressure caution margin is only a heuristic. The raise model assumes live opponents continue and assigns no fold equity. Preflop it estimates the best fixed retained pair rather than valuing every later selection opportunity.
+This is a deliberately simple chip-EV heuristic, not a GTO or ICM solution. Unknown opponent cards are sampled uniformly, conditional on exposed cards, then complete worlds are weighted by action likelihood heuristics. Those likelihoods are not calibrated to real opponents; a positive weak-hand floor is not a known bluff frequency. Opponent discard skill is not modeled. The small sample budget can produce noisy equity estimates, especially with several strongly weighted opponents. The raise model assumes live opponents continue and assigns no fold equity. Preflop it estimates the best fixed retained pair rather than valuing every later selection opportunity.
 
 ## Setup
 
@@ -41,6 +42,8 @@ On macOS, the kit's LightGBM/XGBoost dependencies may also require the OpenMP ru
   --report reports/validation.json
 "$POKER_PY" tools/check_equity_invariants.py agent.py \
   --fixtures-in reports/fixtures.json --report reports/equity-invariants.json
+"$POKER_PY" tools/check_discard.py agent.py
+"$POKER_PY" tools/check_range_model.py agent.py
 "$POKER_PY" tools/no_bank_check.py . "$POKER_KIT/examples/check_or_fold" \
   --tables 10 --hand-cap 20 --report reports/no-bank.json
 "$POKER_KIT/.venv/bin/poker-agent" play . \
@@ -68,7 +71,7 @@ Default bots are intentionally weak. Scores against them are diagnostic benchmar
 
 ## Recorded benchmark results (historical v1)
 
-These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current v2 source. See [v2 validation](validation/v2.md) for correctness and runtime checks.
+These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current v3 source. See [v3 validation](validation/v3.md) for correctness and runtime checks, and [v2 validation](validation/v2.md) for the earlier public-card correction.
 
 The initial batch ran 200 eight-player tables per scenario, with the same mixed-field seeds and seating used for the original-template comparison:
 

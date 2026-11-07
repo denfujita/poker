@@ -1,7 +1,8 @@
 """A small equity / pot-odds baseline for the Bay Area discard-and-reveal variant.
 
 This is a chip-EV heuristic, not a GTO or ICM solver. Opponent exposed cards are fixed; unknown cards are sampled without replacement.
-Folded public cards and our discard are removed. Repeated raises add a conservative margin, not an inferred posterior.
+Folded public cards and our discard are removed. Public actions and bet sizes weight opponent hand hypotheses. This is a
+value-heavy heuristic with a nonzero bluff likelihood, not a calibrated solver.
 All game-dependent work is local to a decision; no cross-table state is kept.
 """
 
@@ -19,6 +20,94 @@ _INDEX = {card: index for index, card in enumerate(_TEXT)}
 _EVALUATE = eval7.evaluate
 # Initialize the evaluator before the first timed decision.
 _EVALUATE(list(_DECK[:7]))
+
+
+def opponent_ranges(state, live):
+    """At most two action contexts per opponent, retaining earlier aggression.
+
+    Each context uses its historical board and wager divided by the pot BEFORE
+    that action. Repeated raises increase pressure. Keep the latest street and
+    the strongest earlier street, so a later small call cannot erase a big raise.
+    """
+    wanted = {seat.seat for seat in live}
+    by_seat = {seat: {} for seat in wanted}
+    board = (); pot = 0; street_bets = {}; raises = {}
+    for event in state.history:
+        kind, seat, amount = event.kind, event.seat, event.amount
+        if kind == "board":
+            board += tuple(_CARD[c] for c in event.cards)
+            street_bets = {}; raises = {}
+        elif kind in ("ante", "blind", "call", "raise"):
+            added = max(0, amount - street_bets.get(seat, 0)) if kind == "raise" else amount
+            if seat in wanted and kind in ("call", "raise"):
+                ratio = min(4.0, added / max(1, pot))
+                if kind == "raise":
+                    raises[seat] = raises.get(seat, 0) + 1
+                    intensity = min(4.5, 1.0 + 1.25 * ratio + .5 * (raises[seat] - 1))
+                else:
+                    intensity = min(2.0, .25 + .75 * ratio)
+                previous = by_seat[seat].get(len(board))
+                if previous is None or intensity > previous[0]:
+                    by_seat[seat][len(board)] = (intensity, board)
+            pot += added
+            if kind != "ante":
+                street_bets[seat] = street_bets.get(seat, 0) + added
+    result = []
+    for seat in live:
+        contexts = by_seat[seat.seat]
+        if not contexts:
+            result.append(())
+            continue
+        latest = max(contexts)
+        current = contexts[latest]
+        earlier = [value for street, value in contexts.items() if street != latest]
+        result.append((current, max(earlier, key=lambda value: value[0])) if earlier else (current,))
+    return tuple(result)
+
+
+def _hand_strength(hand, board):
+    """Cheap range-likelihood feature, not a second equity simulation."""
+    first, second = hand
+    r0, r1 = first.rank + 2, second.rank + 2
+    if not board:
+        if r0 == r1:
+            return min(1.0, .60 + r0 / 35.0)
+        return min(.93, .08 + .67 * (r0 + r1 - 4) / 24.0
+                   + .07 * (first.suit == second.suit)
+                   + .03 * (abs(r0 - r1) <= 2))
+    category = _EVALUATE(board + hand) >> 24
+    if category >= 4:
+        return .98
+    if category == 3:
+        return .91
+    board_ranks = tuple(card.rank + 2 for card in board)
+    involved = r0 == r1 or r0 in board_ranks or r1 in board_ranks
+    if category == 2:
+        strength = .80 if involved else .19
+    elif category == 1:
+        paired_rank = max(r0 if r0 in board_ranks else 0,
+                          r1 if r1 in board_ranks else 0,
+                          r0 if r0 == r1 else 0)
+        # Top pair/overpairs get more weight than bottom pair; board-only pairs
+        # do not count as a held value hand.
+        strength = (.49 + .22 * (paired_rank >= max(board_ranks))) if involved else .17
+    else:
+        strength = .10 + .10 * max(r0, r1) / 14.0
+    if len(board) < 5:
+        suits = tuple(card.suit for card in board) + (first.suit, second.suit)
+        if suits.count(first.suit) >= 4 or suits.count(second.suit) >= 4:
+            strength += .16
+    return min(.95, strength)
+
+
+def _range_weight(hand, contexts):
+    # A positive strength floor retains weak hands and bluffs before exponentiation. It is not
+    # claimed to equal a calibrated 10% posterior bluff frequency.
+    weight = 1.0
+    for intensity, action_board in contexts:
+        strength = _hand_strength(hand, action_board)
+        weight *= (.10 + .90 * strength) ** (1.0 + intensity)
+    return weight
 
 
 def equities(cards, board, opponents, discarded=(), exposed=(), dead_public=(), ranges=()):
@@ -48,25 +137,30 @@ to change our selection after seeing the flop. Ties split among all winners.
     sample = random.Random(seed).sample
     missing = 5 - len(community)
     draws = missing + sum(2 - len(k) for k in fixed)
-    samples = 48 if opponents <= 3 else 32
+    samples = 24 if opponents <= 3 else 16
     totals = [0.0] * len(hands)
+    total_weight = 0.0
     for _ in range(samples):
         picked = sample(deck, draws)
         completed = community + tuple(picked[:missing])
         scores = []
         at = missing
-        for known in fixed:
+        weight = 1.0
+        for j, known in enumerate(fixed):
             need = 2 - len(known)
             enemy = known + tuple(picked[at:at + need]); at += need
             scores.append(_EVALUATE(completed + enemy))
+            if ranges:
+                weight *= _range_weight(enemy, ranges[j])
+        total_weight += weight
         best = max(scores)
         for i, hand in enumerate(hands):
             value = _EVALUATE(completed + hand)
             if value > best:
-                totals[i] += 1.0
+                totals[i] += weight
             elif value == best:
-                totals[i] += 1.0 / (1 + scores.count(best))
-    return tuple(value / samples for value in totals)
+                totals[i] += weight / (1 + scores.count(best))
+    return tuple(value / total_weight for value in totals)
 
 
 def contributions(state):
@@ -117,15 +211,28 @@ def pressure_margin(state, live, cost):
     return margin
 
 
+def choose_discard(cards, board, values):
+    """Prefer current hand strength only when sampled equities tie exactly.
+
+    Equity remains primary: a drawing hand can still beat a made hand on EV.
+    Shared samples often give both trips and a full house 100% against weak
+    sampled opponents; using index order for that tie throws away the full house.
+    """
+    hole = tuple(_CARD[card] for card in cards)
+    community = tuple(_CARD[card] for card in board)
+    pairs = ((hole[1], hole[2]), (hole[0], hole[2]), (hole[0], hole[1]))
+    return max(range(3), key=lambda index: (values[index], _EVALUATE(community + pairs[index])))
+
+
 def decide(state: GameState) -> Action:
     live = [seat for seat in state.seats if seat.seat != state.seat and seat.status in ("active", "all_in")]
     if state.phase not in ("select", "betting"):
         first = state.legal_actions[0]
         return Action(first.kind, first.min_amount)
 
-    values = equities(state.cards, state.board, len(live), state.variant.get("discarded", ()), tuple(tuple(s.shown_cards) for s in live), tuple(c for s in state.seats for c in s.shown_cards))
+    values = equities(state.cards, state.board, len(live), state.variant.get("discarded", ()), tuple(tuple(s.shown_cards) for s in live), tuple(c for s in state.seats for c in s.shown_cards), opponent_ranges(state, live))
     if state.phase == "select":
-        discard = max(range(3), key=lambda index: values[index])
+        discard = choose_discard(state.cards, state.board, values)
         retained = [index for index in range(3) if index != discard]
         # Revealing either retained card has identical showdown equity. Expose
         # the lower rank as a simple information heuristic, not an EV claim.
