@@ -1,8 +1,8 @@
-# Practice v5: side-pot-aware poker bot
+# Exact river side-pot candidate
 
-The current **practice v5** source is SHA-256 `b208a8970bfc314471e07efe1279815704749e2c4c2270b707be9b39b698d7de`. It is the uploaded practice bot and includes the side-pot payout correction. Focused correctness checks passed; the required 200-table reference match and paired strength evaluation are still pending.
+This branch contains an **experimental exact-river follow-up**, SHA-256 `2fe4de9a0d6f35fc5c3bb0aaccf47699e81e0eef2346662ac825d2f67e0f19d5`. Main and the uploaded practice bot still use sampled-side-pot source `b208a897…`. Synthetic and independent math checks passed; remote safety/runtime and further validation remain promotion requirements.
 
-Known limitation: the small Monte Carlo sample can produce noisy river side-pot estimates. An exact river follow-up is being developed separately; this source still uses sampled equity.
+For river side pots with exactly two opponents and one exposed/one hidden card each, the candidate integrates the existing joint weighted model over all legal hidden-card pairs in O(deck size). Other states retain the sampled path. See [scope and tests](docs/exact-river-side-pots.md).
 
 The correction estimates each pot against its eligible opponents, preserving folded contributions and unmatched returns. See [the correction and regression case](docs/side-pot-payout.md).
 
@@ -52,6 +52,7 @@ On macOS, the kit's LightGBM/XGBoost dependencies may also require the OpenMP ru
 "$POKER_PY" tools/check_range_model.py agent.py
 "$POKER_PY" tools/check_integrated_preflop.py agent.py
 "$POKER_PY" tools/check_side_pots.py agent.py
+"$POKER_PY" tools/check_exact_river.py agent.py
 "$POKER_PY" tools/no_bank_check.py . "$POKER_KIT/examples/check_or_fold" \
   --tables 10 --hand-cap 20 --report reports/no-bank.json
 "$POKER_KIT/.venv/bin/poker-agent" play . \
@@ -68,8 +69,8 @@ Stage only the two runtime files, then run the kit packer and checker:
 ```sh
 mkdir -p .local/bot reports
 cp agent.py preflop_policy.json .local/bot/
-"$POKER_KIT/.venv/bin/poker-agent" pack .local/bot reports/practice-v5.zip
-"$POKER_KIT/.venv/bin/poker-agent" check reports/practice-v5.zip
+"$POKER_KIT/.venv/bin/poker-agent" pack .local/bot reports/exact-river-candidate.zip
+"$POKER_KIT/.venv/bin/poker-agent" check reports/exact-river-candidate.zip
 ```
 
 Both files must remain together for local tests and production. The JSON asset's SHA-256 is `8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98`.
@@ -92,13 +93,13 @@ Default bots are intentionally weak. Scores against them are diagnostic benchmar
 
 ## Baseline tight v4 paired comparison
 
-These results apply to frozen tight v4, not practice v5. Across **200 matched pairs of eight-player tables** against seven v3 opponents, tight v4 averaged **23.5 points** versus **13.9** for the v3 control. The paired gain was **+9.6 points/table** (95% Student-t interval **+6.30 to +12.90**). Both fixed seed batches favored v4, with zero failed decisions in either field.
+These results apply to frozen tight v4, not practice v5 or this candidate. Across **200 matched pairs of eight-player tables** against seven v3 opponents, tight v4 averaged **23.5 points** versus **13.9** for the v3 control. The paired gain was **+9.6 points/table** (95% Student-t interval **+6.30 to +12.90**). Both fixed seed batches favored v4, with zero failed decisions in either field.
 
 Top-three finishes rose from 79 to 158 of 200, while outright wins fell from 33 to 25. This is evidence about one fixed local v3 field, not the tournament field. See the [paired report](benchmarks/tight-v4-vs-v3.md) and [aggregate JSON](benchmarks/tight-v4-vs-v3.json) for seeds, exact source hashes, finish counts, and uncertainty details.
 
 ## Recorded benchmark results (historical v1)
 
-These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of practice v5 or frozen tight v4. See [practice v5 status](validation/v5.md) and [v4 validation](validation/v4.md) for version-specific evidence, [v3 validation](validation/v3.md) for the earlier action model, and [v2 validation](validation/v2.md) for exposed-card conditioning.
+These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of this candidate, practice v5, or frozen tight v4. See [practice v5 status](validation/v5.md) and [v4 validation](validation/v4.md) for version-specific evidence, [v3 validation](validation/v3.md) for the earlier action model, and [v2 validation](validation/v2.md) for exposed-card conditioning.
 
 The initial batch ran 200 eight-player tables per scenario, with the same mixed-field seeds and seating used for the original-template comparison:
 
