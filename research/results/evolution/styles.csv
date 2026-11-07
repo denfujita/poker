@@ -1,0 +1,208 @@
+round,team_id,team_name,avg_points,rank,style
+R1,6a5e7e29-441e-4f56-ac0c-6818ca78d1bb,TeamBallHog,23.98,1.0,loose-aggressive
+R1,ee49aec3-59aa-4669-9c1d-2722633b98aa,AZ,22.445280000000004,2.0,tight-aggressive
+R1,0a3c8164-7625-4590-8082-6841254d3460,sandylikesfrogs,21.77,3.0,tight-aggressive
+R1,1593f0af-11bf-4bc4-8756-1cd5093a52c2,2 Curry,21.53,4.0,loose-aggressive
+R1,c13ecb2c-9046-4cf4-b96e-621b08b7078e,Always Folds,20.7659875,5.0,tight-aggressive
+R1,4ba8419c-7777-4650-bb9f-a2b9813cfc6e,Beam,20.12,6.0,tight-aggressive
+R1,02b44b4b-3647-4883-bd00-0dd0c3f52c7e,Curious George,18.74,7.0,tight-aggressive
+R1,dd4d3109-bed6-45bd-9ecd-7f2a85eb2576,PG,18.66,8.0,tight-aggressive
+R1,a778436d-0549-456f-b646-572034530419,wangzhongwang,18.38,9.0,tight-aggressive
+R1,4d74c164-c4e5-4dfc-bdae-511075c1f65c,tuh,18.06,10.0,nit (VPIP<20%)
+R1,b63d9e73-2cc8-4ce4-913a-39935c26323c,Po Stitch,18.04,11.0,tight-aggressive
+R1,a678d43e-a76f-4e2e-bc3b-3d67125b53c9,Chikerbot,17.99476,12.0,tight-aggressive
+R1,32d9bbcf-ec23-4c8e-b0c0-ca3a8ac5bfd2,QKV,17.94,13.0,loose-aggressive
+R1,cbe445bd-9f7c-4e5d-8b62-d42c388cfa18,TS,16.85,14.0,loose-aggressive
+R1,48820210-18cd-4952-812b-16c07dd7b4d5,one in a krillion,16.8,15.0,tight-aggressive
+R1,46dee28d-8de1-4f0f-8ee8-0ca055879eb6,Golden Knight,16.7,16.0,nit (VPIP<20%)
+R1,b9b5d245-90bb-4a15-a6f1-cef5e4b8a8e0,Captain Underpants,16.66,17.0,nit (VPIP<20%)
+R1,798f3c47-d50c-40f6-b18b-79c417d3d5e7,2 Player Fish,16.45,18.0,nit (VPIP<20%)
+R1,2962fd59-41c5-419e-877e-48fa3c880d43,gtoalpha,16.34,19.0,tight-aggressive
+R1,6b12d15b-331f-4393-bc9b-5e8e3689d76d,JJ,16.27,20.0,loose-aggressive
+R1,8c55d3aa-2ed7-4240-bd05-ecd634908a0b,nash,16.21,21.0,tight-aggressive
+R1,d185a3f3-a315-454f-bcc0-c9484d853723,all vibes,15.99,22.0,tight-aggressive
+R1,044eab74-4ca3-4223-bfbb-e02cf7db30bf,Foldemort,15.97,23.0,tight-aggressive
+R1,5eb56e57-744d-43a2-a7ef-01e5cb46af98,Banana,15.79,24.0,tight-aggressive
+R1,48810881-edcf-4e91-acce-36fa4bd070ee,Clippers Championship,15.57,25.0,nit (VPIP<20%)
+R1,bef5bc9d-5d26-4237-8c39-31c01f153f69,Double G,15.31,26.0,nit (VPIP<20%)
+R1,3e382517-81e9-4334-9f55-6619472ade86,ATUBETS,15.28,27.0,tight-aggressive
+R1,09462a65-8f6b-43b7-bbbd-e365c6613cc3,pandas,15.22,28.0,loose-aggressive
+R1,88f23f26-4940-4d2c-b517-4a25ff3f9ef2,GT'F'O,15.19,29.0,tight-aggressive
+R1,2308a671-e5aa-4413-aba7-e8f7b147278c,Team OODI,14.99601,30.0,nit (VPIP<20%)
+R1,226f3503-1953-445b-a701-4b21038e8f87,the twins,14.95,31.0,tight-aggressive
+R1,1cac3452-40ec-4187-a729-6095524027b1,pocket rockets,14.84,32.0,loose-aggressive
+R1,bee2ea9f-2234-44ac-90ba-c74959196208,avisioner,14.76,33.0,nit (VPIP<20%)
+R1,8110287b-c294-416a-98ed-f8e9a04d4aae,nutmegwealth,14.69,34.0,tight-aggressive
+R1,9785bcf3-69c1-4ece-8221-d8a74982f939,avalon,14.61,35.0,tight-aggressive
+R1,4612740c-f72a-4712-a0e3-8a28fc7a3a2d,Jax of Hearts,14.57,36.0,tight-aggressive
+R1,2116cf17-bbc0-4507-8f36-b29aab2eb1b6,Team 0,14.32,37.0,loose-aggressive
+R1,46c91b62-5b31-4417-8446-b1d17d964d07,Team 123,14.18524,38.0,nit (VPIP<20%)
+R1,e3c7ebbf-f716-49e9-bffe-e99e9eb8cedd,Affordance,14.13,39.0,nit (VPIP<20%)
+R1,7c666d53-d761-41d0-9dad-3ee966fb7df4,EEE,14.12,40.0,nit (VPIP<20%)
+R1,13fc29a5-228e-4227-8cd2-38720f7d7e5a,Team 67,14.12,40.0,tight-aggressive
+R1,5e6df9b3-77f3-4509-a98a-5d0cb3aad2e8,Gene Theory Optimal,14.05,42.0,tight-aggressive
+R1,3d732398-6294-47c1-9145-4e3473ffab95,YeziShanYang,13.60634,43.0,tight-aggressive
+R1,96955af4-6abd-4c4f-84e5-8ed3def673a7,Parth&Mrid,13.49,44.0,tight-aggressive
+R1,17c64544-7005-4e3b-9adc-83b41052eee8,Archibald,13.32366,45.0,tight-aggressive
+R1,96e215e8-dd45-45f8-884c-8760c10b40ab,Ghosts in the Machine,13.31,46.0,tight-aggressive
+R1,86aa480a-3f5a-4b17-b4f9-6e3ec6c7b0b7,Case Ace,13.09,47.0,tight-aggressive
+R1,9a47727e-b6ec-412f-bb25-b7428985142d,Team 14,13.08,48.0,tight-aggressive
+R1,47c54ed2-d68e-41d8-9550-6401047e4898,Nai Long,12.9583425,49.0,other
+R1,ff714dfd-13f2-4b4b-8827-c89d2ef32fad,Team 30,12.55,50.0,loose-aggressive
+R1,5144dcda-6484-4761-a6c3-73634f8cdfdd,codex,12.44,51.0,other
+R1,5c1a8c73-5ca8-408d-9da2-36e5b27ce8f4,Wentworth's Finest,12.38,52.0,tight-aggressive
+R1,fe91882c-eedc-4109-9315-b2945f7c0a54,Heine-Borel,12.34,53.0,other
+R1,0e82b6c2-1de0-4ca9-a89d-48c26d67e1e0,Fish,12.29,54.0,loose-aggressive
+R1,67e610f4-d798-4369-bad6-67568874c1a2,Spock's Brain,11.88,55.0,nit (VPIP<20%)
+R1,8a771a92-d523-4b4f-a255-6bdacab540f1,all bluff no bite,11.82,56.0,other
+R1,61ba2685-f4e1-43e5-91ac-7c9748362eae,alex chex codex,11.75,57.0,loose-passive
+R1,786c8626-41e6-4308-a38b-c617fda33208,Team 82,11.42,58.0,tight-aggressive
+R1,0b5a91eb-82b0-4cde-9188-dda6aea5cd87,yrn,11.23,59.0,calling station
+R1,d64f6899-9646-452e-98fe-17b27a4b0815,stanford deviants,11.19,60.0,nit (VPIP<20%)
+R1,f72c40fe-270d-4ec8-8483-21e8277f20b8,Team 132,10.87,61.0,nit (VPIP<20%)
+R1,f1331fa3-f500-4d95-ae1c-d76636a080a3,LoveLP,10.52,62.0,tight-aggressive
+R1,d8b1a5f7-5607-467f-a527-eb367d262fbc,Cmupc,10.47,63.0,nit (VPIP<20%)
+R1,7188f3df-d603-427f-a759-20b0c0c9bae6,guzzins :P,10.43,64.0,loose-passive
+R1,1cc4ef53-2eba-4f04-84be-b076562200d6,a5a7,10.37,65.0,nit (VPIP<20%)
+R1,89e95d3b-7359-463d-b315-fc1f508560b9,Berkeley Hardstyle Club,10.26,66.0,nit (VPIP<20%)
+R1,0e2e3a1a-7d9d-4260-b5a2-9ec2d281cb35,Bean,9.89,67.0,nit (VPIP<20%)
+R1,af048804-d29f-4550-982b-8118a1142d35,Maniacs,9.83,68.0,calling station
+R1,8b115bd7-b4ec-4a95-be1a-c1bbfca948c2,Inabot,9.72,69.0,nit (VPIP<20%)
+R1,e78cebdf-933a-4df5-a820-f8b7e78e4bb6,kyle,9.64,70.0,nit (VPIP<20%)
+R1,c4817d73-7eac-4e5d-9089-db2121c98520,Boji Club,9.52,71.0,tight-aggressive
+R1,b6830b2a-c9de-41fc-aa74-3ef28077895a,Rincsters,9.45,72.0,loose-passive
+R1,d9d77130-a771-4440-b916-ddd031341fb2,coconut burrito,9.224380000000002,73.0,nit (VPIP<20%)
+R1,4b7ea117-3834-4db9-9072-e0b0e6fad0c7,apizza,8.98,74.0,calling station
+R1,6b6e6193-00f4-492b-ba8d-fb89d8169075,EK88,8.96,75.0,loose-passive
+R1,1624bb8a-5dd5-43b0-8be7-1e97f215c1bc,Amazing humans,8.66,76.0,other
+R1,f282b59a-1519-4762-93cc-34ec3a8802c7,The Big Blind Theory,8.3,77.0,loose-passive
+R1,40fdb263-5979-44b4-a1f2-92da9c35405d,The 2 Marketeers,7.94,78.0,loose-passive
+R1,6299afe8-d160-4437-92a4-8b930af2e359,No Game No Life,7.05,79.0,nit (VPIP<20%)
+R1,fdd05746-efaa-46ee-b14a-ad6ba5fae7bc,KC,5.79,80.0,other
+R1,c0c68193-37da-441c-908e-8f01873f50b3,11dproton,5.35,81.0,loose-aggressive
+R1,4ea8e944-0f00-4838-ae37-1420d4eb5015,Team 95,5.15,82.0,loose-passive
+R1,4ef90b20-361e-4b17-92ae-2fe586b4590a,Backtier Labs,4.98,83.0,loose-passive
+R1,dbbe2c73-d035-4dab-abf0-2b2e3d54c3dc,Team Hog,4.64,84.0,loose-aggressive
+R1,19283d00-bb9c-4d91-9dcb-b267fbc92173,3betblind,4.23,85.0,calling station
+R1,2ad1591b-41b1-4e5a-9523-8821fd840efb,Zhang et al.,4.05,86.0,jammer (shoves 40bb+ deep)
+R1,36d3d38a-3677-4613-b933-e0b5ae5096ae,TV All-In,3.89,87.0,loose-aggressive
+R1,92358579-4808-4a82-9045-81a422eaabe5,Eradicating Entropy,1.62,88.0,jammer (shoves 40bb+ deep)
+R1,e460d10a-3a78-4b9d-84ca-85824a381aa9,Team 115,1.53,89.0,jammer (shoves 40bb+ deep)
+R1,68628768-88bb-42e4-9e2b-9d4b1aa1e787,bill & ted,0.9,90.0,calling station
+R1,81a66b6d-f32e-480a-af8f-fc20b8570676,Spartan Mathematics,0.31,91.0,calling station
+R1,8f71deeb-5ca5-4d83-a7be-f4ee0c160dcf,prior_updating...,0.15,92.0,calling station
+R2,6a5e7e29-441e-4f56-ac0c-6818ca78d1bb,TeamBallHog,23.456,1.0,loose-aggressive
+R2,ee49aec3-59aa-4669-9c1d-2722633b98aa,AZ,22.558123499999997,2.0,tight-aggressive
+R2,1cac3452-40ec-4187-a729-6095524027b1,pocket rockets,21.392,3.0,loose-aggressive
+R2,c13ecb2c-9046-4cf4-b96e-621b08b7078e,Always Folds,20.596,4.0,loose-aggressive
+R2,1593f0af-11bf-4bc4-8756-1cd5093a52c2,2 Curry,20.572,5.0,loose-aggressive
+R2,a4736764-5d17-4806-81ce-74dbf565aabd,Team 72,20.519269500000004,6.0,tight-aggressive
+R2,0a3c8164-7625-4590-8082-6841254d3460,sandylikesfrogs,20.516,7.0,tight-aggressive
+R2,81a66b6d-f32e-480a-af8f-fc20b8570676,Spartan Mathematics,19.74,8.0,tight-aggressive
+R2,1624bb8a-5dd5-43b0-8be7-1e97f215c1bc,Amazing humans,19.56,9.0,tight-aggressive
+R2,798f3c47-d50c-40f6-b18b-79c417d3d5e7,2 Player Fish,19.272,10.0,tight-aggressive
+R2,cbe445bd-9f7c-4e5d-8b62-d42c388cfa18,TS,19.128,11.0,loose-aggressive
+R2,4ba8419c-7777-4650-bb9f-a2b9813cfc6e,Beam,18.892,12.0,tight-aggressive
+R2,9785bcf3-69c1-4ece-8221-d8a74982f939,avalon,18.868,13.0,tight-aggressive
+R2,786c8626-41e6-4308-a38b-c617fda33208,Team 82,18.508,14.0,tight-aggressive
+R2,32d9bbcf-ec23-4c8e-b0c0-ca3a8ac5bfd2,QKV,18.348,15.0,loose-aggressive
+R2,b9b5d245-90bb-4a15-a6f1-cef5e4b8a8e0,Captain Underpants,18.132,16.0,nit (VPIP<20%)
+R2,a678d43e-a76f-4e2e-bc3b-3d67125b53c9,Chikerbot,17.861528,17.0,tight-aggressive
+R2,d185a3f3-a315-454f-bcc0-c9484d853723,all vibes,17.796,18.0,tight-aggressive
+R2,b63d9e73-2cc8-4ce4-913a-39935c26323c,Po Stitch,17.628,19.0,tight-aggressive
+R2,88f23f26-4940-4d2c-b517-4a25ff3f9ef2,GT'F'O,17.596,20.0,tight-aggressive
+R2,911439a1-c88b-4e38-a22d-d22a975bdc73,durrrr,17.568,21.0,tight-aggressive
+R2,46dee28d-8de1-4f0f-8ee8-0ca055879eb6,Golden Knight,17.22,22.0,tight-aggressive
+R2,02b44b4b-3647-4883-bd00-0dd0c3f52c7e,Curious George,16.944,23.0,tight-aggressive
+R2,dd4d3109-bed6-45bd-9ecd-7f2a85eb2576,PG,16.66,24.0,nit (VPIP<20%)
+R2,d64f6899-9646-452e-98fe-17b27a4b0815,stanford deviants,16.34,25.0,nit (VPIP<20%)
+R2,044eab74-4ca3-4223-bfbb-e02cf7db30bf,Foldemort,16.22,26.0,tight-aggressive
+R2,96955af4-6abd-4c4f-84e5-8ed3def673a7,Parth&Mrid,16.216,27.0,tight-aggressive
+R2,d9d77130-a771-4440-b916-ddd031341fb2,coconut burrito,16.18,28.0,tight-aggressive
+R2,4d74c164-c4e5-4dfc-bdae-511075c1f65c,tuh,16.02252,29.0,tight-aggressive
+R2,8b115bd7-b4ec-4a95-be1a-c1bbfca948c2,Inabot,15.948,30.0,loose-aggressive
+R2,6b6e6193-00f4-492b-ba8d-fb89d8169075,EK88,15.688,31.0,tight-aggressive
+R2,0b5a91eb-82b0-4cde-9188-dda6aea5cd87,yrn,15.356,32.0,loose-aggressive
+R2,09462a65-8f6b-43b7-bbbd-e365c6613cc3,pandas,15.156,33.0,loose-aggressive
+R2,48810881-edcf-4e91-acce-36fa4bd070ee,Clippers Championship,15.152,34.0,tight-aggressive
+R2,5eb56e57-744d-43a2-a7ef-01e5cb46af98,Banana,15.064,35.0,tight-aggressive
+R2,48820210-18cd-4952-812b-16c07dd7b4d5,one in a krillion,15.064,35.0,tight-aggressive
+R2,fe91882c-eedc-4109-9315-b2945f7c0a54,Heine-Borel,14.896,37.0,tight-aggressive
+R2,3e382517-81e9-4334-9f55-6619472ade86,ATUBETS,14.872,38.0,tight-aggressive
+R2,2962fd59-41c5-419e-877e-48fa3c880d43,gtoalpha,14.768,39.0,tight-aggressive
+R2,8c55d3aa-2ed7-4240-bd05-ecd634908a0b,nash,14.696,40.0,tight-aggressive
+R2,bee2ea9f-2234-44ac-90ba-c74959196208,avisioner,14.688,41.0,nit (VPIP<20%)
+R2,8110287b-c294-416a-98ed-f8e9a04d4aae,nutmegwealth,14.52,42.0,tight-aggressive
+R2,7c666d53-d761-41d0-9dad-3ee966fb7df4,EEE,14.504,43.0,nit (VPIP<20%)
+R2,0991f475-dbf6-4f00-9756-ac23c9b50c9f,nik airball,14.008,44.0,tight-aggressive
+R2,260011bf-f48c-434a-a85f-cd53f7389e74,thepastaway,13.988,45.0,loose-passive
+R2,6b12d15b-331f-4393-bc9b-5e8e3689d76d,JJ,13.916,46.0,loose-aggressive
+R2,f282b59a-1519-4762-93cc-34ec3a8802c7,The Big Blind Theory,13.692,47.0,tight-aggressive
+R2,226f3503-1953-445b-a701-4b21038e8f87,the twins,13.564,48.0,tight-aggressive
+R2,13fc29a5-228e-4227-8cd2-38720f7d7e5a,Team 67,13.496,49.0,tight-aggressive
+R2,96e215e8-dd45-45f8-884c-8760c10b40ab,Ghosts in the Machine,13.288,50.0,tight-aggressive
+R2,952c1505-cfab-489c-ae16-0a104e645731,Snoopy,13.184,51.0,tight-aggressive
+R2,d2ef60e8-31b8-4ff6-bbd6-4a5a28f2d5ab,How do you play poker,13.144,52.0,tight-aggressive
+R2,2116cf17-bbc0-4507-8f36-b29aab2eb1b6,Team 0,13.136,53.0,tight-aggressive
+R2,17c64544-7005-4e3b-9adc-83b41052eee8,Archibald,12.90792,54.0,tight-aggressive
+R2,46c91b62-5b31-4417-8446-b1d17d964d07,Team 123,12.879824,55.0,nit (VPIP<20%)
+R2,36badfaf-76a0-45cc-87a3-bfe912ab9458,Prath,12.812,56.0,nit (VPIP<20%)
+R2,3d732398-6294-47c1-9145-4e3473ffab95,YeziShanYang,12.792,57.0,tight-aggressive
+R2,e3c7ebbf-f716-49e9-bffe-e99e9eb8cedd,Affordance,12.644,58.0,nit (VPIP<20%)
+R2,9a47727e-b6ec-412f-bb25-b7428985142d,Team 14,12.292,59.0,tight-aggressive
+R2,5144dcda-6484-4761-a6c3-73634f8cdfdd,codex,12.224,60.0,loose-aggressive
+R2,47c54ed2-d68e-41d8-9550-6401047e4898,Nai Long,12.1,61.0,other
+R2,1d3005d2-9f64-4afa-aeb8-8ce5d07a3964,Lemonade,11.932,62.0,loose-aggressive
+R2,90417cc9-ab5e-4d96-b660-e7a2ab520cd4,Panshul42,11.728,63.0,tight-aggressive
+R2,f72c40fe-270d-4ec8-8483-21e8277f20b8,Team 132,11.728,63.0,nit (VPIP<20%)
+R2,4c4126d5-ddbe-4617-ad34-f42a55f7a70e,ALL IN,11.7,65.0,tight-aggressive
+R2,86aa480a-3f5a-4b17-b4f9-6e3ec6c7b0b7,Case Ace,11.684,66.0,nit (VPIP<20%)
+R2,fc309f1c-e74f-40b1-afcb-4815a24b81bb,Litmus,11.676,67.0,tight-aggressive
+R2,d8b1a5f7-5607-467f-a527-eb367d262fbc,Cmupc,11.664,68.0,nit (VPIP<20%)
+R2,5e6df9b3-77f3-4509-a98a-5d0cb3aad2e8,Gene Theory Optimal,11.612,69.0,tight-aggressive
+R2,61ba2685-f4e1-43e5-91ac-7c9748362eae,alex chex codex,11.464,70.0,loose-passive
+R2,67e610f4-d798-4369-bad6-67568874c1a2,Spock's Brain,11.14,71.0,nit (VPIP<20%)
+R2,bcd42875-1248-492b-9a1e-0f281f1774ab,Jerries,11.056,72.0,nit (VPIP<20%)
+R2,a778436d-0549-456f-b646-572034530419,wangzhongwang,10.98,73.0,nit (VPIP<20%)
+R2,0e82b6c2-1de0-4ca9-a89d-48c26d67e1e0,Fish,10.972,74.0,loose-aggressive
+R2,b0ba7a13-1c80-4b7d-9fb8-11c6931dec4e,Team 35,10.932552,75.0,other
+R2,80d086cf-5ac3-449f-acbe-888de14561bf,Team_01,10.876,76.0,nit (VPIP<20%)
+R2,89e95d3b-7359-463d-b315-fc1f508560b9,Berkeley Hardstyle Club,10.852,77.0,nit (VPIP<20%)
+R2,0e2e3a1a-7d9d-4260-b5a2-9ec2d281cb35,Bean,10.708,78.0,nit (VPIP<20%)
+R2,e78cebdf-933a-4df5-a820-f8b7e78e4bb6,kyle,10.54,79.0,nit (VPIP<20%)
+R2,ff714dfd-13f2-4b4b-8827-c89d2ef32fad,Team 30,10.4,80.0,loose-aggressive
+R2,1cc4ef53-2eba-4f04-84be-b076562200d6,a5a7,10.4,80.0,nit (VPIP<20%)
+R2,6a987dd2-5b82-499d-bdb9-81c5a58b5247,WAYS-ER TEAM,10.204,82.0,other
+R2,f1331fa3-f500-4d95-ae1c-d76636a080a3,LoveLP,10.144,83.0,tight-aggressive
+R2,3a1f139e-be75-45eb-90c0-31c7cbb99247,methud,10.044,84.0,jammer (shoves 40bb+ deep)
+R2,7188f3df-d603-427f-a759-20b0c0c9bae6,guzzins :P,9.944,85.0,loose-passive
+R2,bef5bc9d-5d26-4237-8c39-31c01f153f69,Double G,9.896,86.0,tight-aggressive
+R2,68628768-88bb-42e4-9e2b-9d4b1aa1e787,bill & ted,9.884,87.0,loose-passive
+R2,60ed28bc-3336-4a56-85d3-5fe46e035347,Caniac Combo,9.692,88.0,loose-aggressive
+R2,c4817d73-7eac-4e5d-9089-db2121c98520,Boji Club,9.304,89.0,tight-aggressive
+R2,b6830b2a-c9de-41fc-aa74-3ef28077895a,Rincsters,9.193384,90.0,loose-passive
+R2,c0c68193-37da-441c-908e-8f01873f50b3,11dproton,8.868,91.0,nit (VPIP<20%)
+R2,36d3d38a-3677-4613-b933-e0b5ae5096ae,TV All-In,8.28,92.0,loose-aggressive
+R2,ede95387-f0e2-4a45-b9f4-56dfaac8cb9d,qab,8.256,93.0,loose-passive
+R2,1408aa69-7af6-460d-818a-9ccfda538583,Pigeon Poker Player,8.144,94.0,calling station
+R2,5c1a8c73-5ca8-408d-9da2-36e5b27ce8f4,Wentworth's Finest,8.076,95.0,tight-aggressive
+R2,8a771a92-d523-4b4f-a255-6bdacab540f1,all bluff no bite,7.976,96.0,jammer (shoves 40bb+ deep)
+R2,6299afe8-d160-4437-92a4-8b930af2e359,No Game No Life,7.708,97.0,nit (VPIP<20%)
+R2,2308a671-e5aa-4413-aba7-e8f7b147278c,Team OODI,7.695015999999999,98.0,loose-passive
+R2,af048804-d29f-4550-982b-8118a1142d35,Maniacs,7.68,99.0,tight-aggressive
+R2,ca2f192c-31dd-4858-b030-df4ded5b5914,Raise Against The Machine,7.249863,100.0,jammer (shoves 40bb+ deep)
+R2,4612740c-f72a-4712-a0e3-8a28fc7a3a2d,Jax of Hearts,7.0,101.0,loose-aggressive
+R2,d0999a25-62c5-42c6-a22b-1f251d4d437f,Team 52,6.984,102.0,nit (VPIP<20%)
+R2,fdd05746-efaa-46ee-b14a-ad6ba5fae7bc,KC,5.924,103.0,other
+R2,92358579-4808-4a82-9045-81a422eaabe5,Eradicating Entropy,5.828,104.0,jammer (shoves 40bb+ deep)
+R2,26523120-f1ec-4eb8-91aa-bf5978cc24f0,The Bridge Team,5.672,105.0,loose-passive
+R2,4ea8e944-0f00-4838-ae37-1420d4eb5015,Team 95,5.568,106.0,loose-passive
+R2,7a2f36fa-d43b-4371-81c4-98d8fc6c7197,Leonliuandhisgoons,5.044,107.0,loose-passive
+R2,dbbe2c73-d035-4dab-abf0-2b2e3d54c3dc,Team Hog,4.056,108.0,loose-aggressive
+R2,19283d00-bb9c-4d91-9dcb-b267fbc92173,3betblind,3.7,109.0,calling station
+R2,4ef90b20-361e-4b17-92ae-2fe586b4590a,Backtier Labs,3.664,110.0,loose-passive
+R2,2ad1591b-41b1-4e5a-9523-8821fd840efb,Zhang et al.,3.436,111.0,jammer (shoves 40bb+ deep)
+R2,e460d10a-3a78-4b9d-84ca-85824a381aa9,Team 115,1.524,112.0,jammer (shoves 40bb+ deep)
+R2,0ae324c2-e0b3-4a5c-a228-6d451fdaa797,RJ,1.28,113.0,jammer (shoves 40bb+ deep)
+R2,40fdb263-5979-44b4-a1f2-92da9c35405d,The 2 Marketeers,1.144,114.0,calling station
+R2,8f71deeb-5ca5-4d83-a7be-f4ee0c160dcf,prior_updating...,0.16,115.0,calling station
