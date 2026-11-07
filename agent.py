@@ -386,7 +386,8 @@ def _range_weight(hand, contexts):
     return weight
 
 
-def equities(cards, board, opponents, discarded=(), exposed=(), dead_public=(), ranges=()):
+def equities(cards, board, opponents, discarded=(), exposed=(), dead_public=(), ranges=(),
+             contender_groups=None):
     """Return showdown pot shares for each possible discard (or the sole pair).
 
 For three cards, result[i] is equity after discarding original card i. Choose
@@ -399,7 +400,8 @@ to change our selection after seeing the flop. Ties split among all winners.
     dead = tuple(_CARD[c] for c in discarded)
     hands = ((hole[1], hole[2]), (hole[0], hole[2]), (hole[0], hole[1])) if len(hole) == 3 else (hole,)
     if opponents == 0:
-        return (1.0,) * len(hands)
+        result = (1.0,) * len(hands)
+        return result if contender_groups is None else tuple(result for _ in contender_groups)
     fixed = tuple(tuple(_CARD[c] for c in xs) for xs in exposed) if exposed else ((),) * opponents
     blocked = set(hole + community + dead + tuple(_CARD[c] for c in dead_public))
     for known in fixed: blocked.update(known)
@@ -415,6 +417,7 @@ to change our selection after seeing the flop. Ties split among all winners.
     draws = missing + sum(2 - len(k) for k in fixed)
     samples = 24 if opponents <= 3 else 16
     totals = [0.0] * len(hands)
+    grouped = [[0.0] * len(hands) for _ in contender_groups] if contender_groups is not None else None
     total_weight = 0.0
     for _ in range(samples):
         picked = sample(deck, draws)
@@ -429,6 +432,20 @@ to change our selection after seeing the flop. Ties split among all winners.
             if ranges:
                 weight *= _range_weight(enemy, ranges[j])
         total_weight += weight
+        if grouped is not None:
+            contests = []
+            for group in contender_groups:
+                relevant = [scores[j] for j in group]
+                best = max(relevant, default=-1)
+                contests.append((best, relevant.count(best)))
+            for i, hand in enumerate(hands):
+                value = _EVALUATE(completed + hand)
+                for g, (best, ties) in enumerate(contests):
+                    if value > best:
+                        grouped[g][i] += weight
+                    elif value == best:
+                        grouped[g][i] += weight / (1 + ties)
+            continue
         best = max(scores)
         for i, hand in enumerate(hands):
             value = _EVALUATE(completed + hand)
@@ -436,6 +453,8 @@ to change our selection after seeing the flop. Ties split among all winners.
                 totals[i] += weight
             elif value == best:
                 totals[i] += weight / (1 + scores.count(best))
+    if grouped is not None:
+        return tuple(tuple(value / total_weight for value in group) for group in grouped)
     return tuple(value / total_weight for value in totals)
 
 
@@ -443,13 +462,20 @@ def contributions(state):
     """Reconstruct per-hand commitments; raise events contain STREET totals."""
     total = {seat.seat: 0 for seat in state.seats}
     street = {seat.seat: 0 for seat in state.seats}
+    antes = {}
     for event in state.history:
         if event.kind == "board":
+            # Completed streets refund a unique unmatched high bet silently.
+            # Antes are absent from street totals and are never refunded here.
+            ordered = sorted(street.items(), key=lambda item: item[1], reverse=True)
+            if len(ordered) > 1:
+                total[ordered[0][0]] -= ordered[0][1] - ordered[1][1]
             street = dict.fromkeys(street, 0)
         elif event.seat in total:
             seat = event.seat
             if event.kind == "ante":
                 total[seat] += event.amount
+                antes[seat] = antes.get(seat, 0) + event.amount
             elif event.kind in ("blind", "call"):
                 total[seat] += event.amount
                 street[seat] += event.amount
@@ -457,6 +483,10 @@ def contributions(state):
                 added = max(0, event.amount - street[seat])
                 total[seat] += added
                 street[seat] = event.amount
+    # The engine also trims unmatched antes before any blinds are posted.
+    if len(antes) > 1:
+        ordered = sorted(antes.items(), key=lambda item: item[1], reverse=True)
+        total[ordered[0][0]] -= ordered[0][1] - ordered[1][1]
     return total
 
 
@@ -471,6 +501,68 @@ def eligible_pot(state, committed, hero_cost, additions=None):
     # The public event stream does not identify every uncalled refund. Never
     # count more than the actual pot plus newly committed chips.
     return min(pot, state.pot + hero_cost + sum(additions.values()))
+
+
+def pot_layers(state, committed, hero_cost, live, additions=None):
+    """Amounts and eligible opponent indexes for hero's post-action pots.
+
+    Folded commitments remain dead money. An all-in player's eligibility ends
+    at its contribution. An active opponent can still respond, so retain it up
+    to its available stack without crediting any unmade call to the call pot.
+    This preserves the ordinary single-pot assumption while separating capped
+    opponents. Projected raises explicitly supply their assumed caller additions.
+    """
+    additions = additions or {}
+    after = {seat: amount + additions.get(seat, 0) for seat, amount in committed.items()}
+    after[state.seat] += hero_cost
+    cap = after[state.seat]
+    capacities = tuple(committed[seat.seat] + seat.stack
+                       if seat.status == "active" else after[seat.seat] for seat in live)
+    levels = sorted({min(cap, amount) for amount in (*after.values(), *capacities) if amount > 0})
+    remaining = eligible_pot(state, committed, hero_cost, additions)
+    result = {}
+    previous = 0
+    for level in levels:
+        amount = min(remaining, (level - previous) * sum(value >= level for value in after.values()))
+        previous = level
+        if amount <= 0:
+            continue
+        group = tuple(j for j, capacity in enumerate(capacities) if capacity >= level)
+        result[group] = result.get(group, 0) + amount
+        remaining -= amount
+    return tuple((amount, group) for group, amount in result.items())
+
+
+def layer_payout(layers, shares, hand=0, margin=0.0):
+    """Expected chips, splitting ties within each layer's eligible field.
+
+    Uncontested money, including an unmatched return, is certain. It receives
+    no equity margin, so paying and recovering an uncalled excess cancels out.
+    """
+    return sum(amount * (max(0.0, shares[group][hand] - margin) if group else 1.0)
+               for amount, group in layers)
+
+
+def raise_projection(state, hero, live, cost, preflop=False):
+    """The existing deterministic raise size, before any equity comparison."""
+    legal = state.can("raise")
+    callers = [seat for seat in live if seat.status == "active" and seat.stack > 0]
+    if not legal or not callers:
+        return None
+    if preflop:
+        ctx = preflop_context(state)
+        if ctx is None:
+            return None
+        target = min(hero.stack + hero.bet, ctx["cover"]) if ctx["facing_bb"] <= 15 else 3 * ctx["max_bet"]
+        target = int(min(legal.max_amount, max(legal.min_amount, target)))
+    else:
+        target = max(seat.bet for seat in state.seats) + max(1, 62 * (state.pot + cost) // 100)
+        cover = max(seat.bet + seat.stack for seat in callers)
+        target = int(min(legal.max_amount, cover, max(legal.min_amount, target)))
+    if target < legal.min_amount:
+        return None
+    additions = {seat.seat: min(seat.stack, max(0, target - seat.bet)) for seat in callers}
+    return target, target - hero.bet, additions
 
 
 def pressure_margin(state, live, cost):
@@ -516,56 +608,80 @@ def decide(state: GameState) -> Action:
         if chosen is not None:
             return chosen
 
-    values = equities(state.cards, state.board, len(live), state.variant.get("discarded", ()), tuple(tuple(s.shown_cards) for s in live), tuple(c for s in state.seats for c in s.shown_cards), opponent_ranges(state, live))
+    check = state.can("check")
+    call = state.can("call")
+    cost = min(max(0, state.to_call), hero.stack) if call else 0
+    committed = contributions(state)
+    call_pot = eligible_pot(state, committed, cost)
+    call_layers = pot_layers(state, committed, cost, live)
+    projection = raise_projection(state, hero, live, cost, preflop) if state.phase == "betting" else None
+    raise_layers = pot_layers(state, committed, projection[1], live, projection[2]) if projection else ()
+    full_group = tuple(range(len(live)))
+    groups = tuple(dict.fromkeys((full_group, *(group for _, group in call_layers + raise_layers))))
+    args = (state.cards, state.board, len(live), state.variant.get("discarded", ()),
+            tuple(tuple(s.shown_cards) for s in live),
+            tuple(c for s in state.seats for c in s.shown_cards), opponent_ranges(state, live))
+    if groups == (full_group,):
+        shares = {full_group: equities(*args)}
+    else:
+        shares = dict(zip(groups, equities(*args, contender_groups=groups)))
+    single_pot = all(group == full_group for _, group in call_layers)
+    values = shares[full_group] if single_pot or not call_pot else tuple(
+        layer_payout(call_layers, shares, hand=i) / call_pot for i in range(len(shares[full_group])))
     if state.phase == "select":
         discard = choose_discard(state.cards, state.board, values)
         retained = [index for index in range(3) if index != discard]
         reveal = choose_reveal(state.cards, state.board, retained)
         return Action("select", cards=(discard, reveal))
 
-    check = state.can("check")
-    call = state.can("call")
-    cost = min(max(0, state.to_call), hero.stack) if call else 0
-    committed = contributions(state)
-    call_pot = eligible_pot(state, committed, cost)
     raw_equity = max(values)
+    hand_index = max(range(len(values)), key=values.__getitem__)
     if preflop:
         # Defensive decisions are terminal: a rejected call cannot fall through
         # to the generic value-raise branch and become a weak reraise.
-        return preflop_action(state, percentile, equity=raw_equity, call_pot=call_pot) or _preflop_passive(state)
+        action = preflop_action(state, percentile, equity=raw_equity, call_pot=call_pot) or _preflop_passive(state)
+        if (action.kind == "raise" and projection and
+                any(group != full_group for _, group in call_layers + raise_layers)):
+            # A call-price equity cannot price a different projected side pot.
+            # Keep the existing ordinal/value gate, then compare actual layers.
+            raise_ev = layer_payout(raise_layers, shares, hand_index, .06) - projection[1]
+            call_ev = layer_payout(call_layers, shares, hand_index, .06) - cost
+            if raise_ev <= max(0.0, call_ev) + .05 * projection[1]:
+                return Action.call() if call and call_ev >= 0 else _preflop_passive(state)
+        return action
     context = postflop_context(state, live)
     value_level = made_value_level(state.cards, state.board)
     margin = pressure_margin(state, {seat.seat for seat in live}, cost)
     margin += defense_premium(state, hero, live, cost, context, value_level, raw_equity)
     equity = max(0.0, raw_equity - margin)
-    passive_ev = equity * call_pot - cost
+    passive_ev = (equity * call_pot if single_pot else
+                  layer_payout(call_layers, shares, hand_index, margin)) - cost
     passive = Action.check() if check else Action.call() if call and passive_ev >= 0 else Action.fold()
 
-    raise_ = state.can("raise")
-    callers = [seat for seat in live if seat.status == "active" and seat.stack > 0]
     # Preserve first-in value bets. Facing resistance, require a private made
     # hand stronger than one pair unless genuinely short/committed and very strong.
     short_committed = hero.stack <= state.pot and raw_equity >= .85
     reraise_ok = (not cost or (passive.kind == "call" and
                   (value_level >= 2 or short_committed)))
-    if raise_ and callers and reraise_ok:
-        # M is the largest current street contribution; P includes those bets.
-        # Raise-to = M + floor(.62 * (P + actual call cost)), then legal caps.
-        current_max = max(seat.bet for seat in state.seats)
-        target = current_max + max(1, 62 * (state.pot + cost) // 100)
-        cover = max(seat.bet + seat.stack for seat in callers)
-        target = int(min(raise_.max_amount, cover, max(raise_.min_amount, target)))
-        if target >= raise_.min_amount:
-            raise_cost = target - hero.bet
-            additions = {seat.seat: min(seat.stack, max(0, target - seat.bet)) for seat in callers}
-            # Deliberately no assumed fold equity or arbitrary bluff mixture:
-            # this simple model projects all live opponents continuing.
+    if projection and reraise_ok:
+        target, raise_cost, additions = projection
+        raise_pot = eligible_pot(state, committed, raise_cost, additions)
+        # All active opponents are projected to continue; no fold equity.
+        if all(group == full_group for _, group in raise_layers):
             value_equity = max(0.0, equity - (0.06 if cost else 0.025))
-            raise_ev = value_equity * eligible_pot(state, committed, raise_cost, additions) - raise_cost
-            threshold = 1.0 / (len(live) + 1) + (0.14 if cost else 0.08)
-            if (value_equity > threshold
-                    and raise_ev > max(0.0, passive_ev) + 0.05 * raise_cost):
-                return Action.raise_to(target)
+            raise_ev = value_equity * raise_pot - raise_cost
+            fair_share = 1.0 / (len(live) + 1)
+        else:
+            payout = layer_payout(raise_layers, shares, hand_index, margin + (0.06 if cost else .025))
+            raise_ev = payout - raise_cost
+            certain = sum(amount for amount, group in raise_layers if not group)
+            contested = max(1, raise_pot - certain)
+            value_equity = max(0.0, payout - certain) / contested
+            fair_share = sum(amount / (len(group) + 1) for amount, group in raise_layers if group) / contested
+        threshold = fair_share + (0.14 if cost else 0.08)
+        if (value_equity > threshold
+                and raise_ev > max(0.0, passive_ev) + 0.05 * raise_cost):
+            return Action.raise_to(target)
 
     if passive.kind == "fold" and not state.can("fold"):
         first = state.legal_actions[0]

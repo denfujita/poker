@@ -20,7 +20,8 @@ spec.loader.exec_module(bot)
 def selection_state(cards, board, opponents):
     return SimpleNamespace(
         phase='select', cards=cards, board=board, seat=0, variant={}, history=[],
-        seats=[SimpleNamespace(seat=i, status='active', shown_cards=())
+        pot=0, to_call=0, can=lambda kind: None,
+        seats=[SimpleNamespace(seat=i, status='active', shown_cards=(), stack=1000, bet=0)
                for i in range(opponents + 1)],
     )
 
