@@ -23,3 +23,7 @@ hand-history/
 id_ed25519*
 id_rsa*
 api-key*
+
+# research/: hand-history data stays local
+research/data/
+*.jsonl.gz

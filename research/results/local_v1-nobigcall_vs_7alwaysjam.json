@@ -1,0 +1,88 @@
+{
+  "seed": "s4",
+  "tables": 200,
+  "bots": {
+    "v1-nobigcall#0": {
+      "average_points": 36.2,
+      "places": {
+        "1": 62,
+        "2": 138
+      },
+      "failed_decisions": 0
+    },
+    "always_jam#1": {
+      "average_points": 10.967,
+      "places": {
+        "1": 26,
+        "2": 12,
+        "3": 150,
+        "4": 12
+      },
+      "failed_decisions": 0
+    },
+    "always_jam#2": {
+      "average_points": 8.65,
+      "places": {
+        "1": 17,
+        "2": 10,
+        "3": 159,
+        "4": 14
+      },
+      "failed_decisions": 0
+    },
+    "always_jam#3": {
+      "average_points": 10.0,
+      "places": {
+        "1": 24,
+        "2": 10,
+        "3": 150,
+        "4": 16
+      },
+      "failed_decisions": 0
+    },
+    "always_jam#4": {
+      "average_points": 9.35,
+      "places": {
+        "1": 20,
+        "2": 7,
+        "3": 163,
+        "4": 9,
+        "5": 1
+      },
+      "failed_decisions": 0
+    },
+    "always_jam#5": {
+      "average_points": 7.417,
+      "places": {
+        "1": 12,
+        "2": 8,
+        "3": 168,
+        "4": 11,
+        "5": 1
+      },
+      "failed_decisions": 0
+    },
+    "always_jam#6": {
+      "average_points": 8.85,
+      "places": {
+        "1": 21,
+        "2": 6,
+        "3": 157,
+        "4": 15,
+        "5": 1
+      },
+      "failed_decisions": 0
+    },
+    "always_jam#7": {
+      "average_points": 8.567,
+      "places": {
+        "1": 18,
+        "2": 9,
+        "3": 158,
+        "4": 14,
+        "5": 1
+      },
+      "failed_decisions": 0
+    }
+  }
+}

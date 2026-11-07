@@ -1,0 +1,115 @@
+teams=116 (with >=300 preflop decisions: 116)
+
+## Field quantiles (teams with >=300 hands)
+                     0.100    0.500    0.900
+pts                  7.197   14.052   20.276
+bust<=30h            0.077    0.272    0.573
+VPIP                 0.146    0.322    0.603
+PFR                  0.028    0.212    0.435
+unopened_n        3909.500 6258.500 8450.000
+open_fold            0.219    0.600    0.808
+open_limp            0.000    0.007    0.246
+open_raise           0.000    0.254    0.520
+open_shove           0.001    0.032    0.093
+open_size_bb_med     2.012    2.500    3.500
+vsRaise_n         2458.000 4128.000 5752.000
+vsRaise_fold         0.477    0.796    0.935
+vsRaise_call         0.020    0.127    0.340
+vsRaise_3bet         0.008    0.052    0.202
+bigCall_n          337.500  656.000 1179.500
+bigCall_rate         0.085    0.252    0.556
+post_unbet_n       706.000 2094.000 3899.000
+post_bet             0.100    0.522    0.755
+post_bet_size_med    0.500    0.600    0.750
+post_bet_allin       0.033    0.069    0.135
+post_facing_n      273.000 1320.500 2296.500
+post_fold            0.193    0.373    0.789
+post_call            0.088    0.471    0.651
+post_raise           0.015    0.115    0.267
+
+## Preflop: selected teams
+                     tables    pts  bust<=30h  hands  VPIP   PFR  open_fold  open_limp  open_raise  open_shove  open_size_bb_med
+team                                                                                                                            
+TeamBallHog             162 22.037      0.142  12368 0.445 0.349      0.411      0.018       0.430       0.112             2.850
+AZ                      138 23.986      0.094  12828 0.324 0.284      0.590      0.003       0.353       0.039             2.500
+pocket rockets          146 26.507      0.116  12536 0.481 0.298      0.332      0.233       0.398       0.013             2.540
+Always Folds            153 22.549      0.170  11397 0.434 0.355      0.540      0.003       0.321       0.098             2.500
+2 Curry                 153 19.608      0.163  11836 0.494 0.472      0.358      0.001       0.567       0.049             3.000
+Team 72                 141 20.213      0.128  11593 0.313 0.239      0.604      0.000       0.342       0.015             2.600
+sandylikesfrogs         147 22.313      0.102  11844 0.345 0.251      0.531      0.115       0.314       0.012             2.000
+Spartan Mathematics     118 21.780      0.102  10845 0.251 0.215      0.614      0.001       0.286       0.067             3.000
+3betblind              2500  3.700      0.649  70766 0.397 0.215      0.646      0.119       0.211       0.001             2.250
+
+## Facing raises / big all-in decisions: selected teams
+                     vsRaise_n  vsRaise_fold  vsRaise_call  vsRaise_3bet  bigCall_n  bigCall_rate
+team                                                                                             
+TeamBallHog               4948         0.728         0.211         0.061        520         0.323
+AZ                        4750         0.794         0.104         0.102        585         0.239
+pocket rockets            4616         0.800         0.096         0.104        844         0.244
+Always Folds              4355         0.546         0.204         0.251        599         0.155
+2 Curry                   4807         0.686         0.052         0.261        713         0.184
+Team 72                   4220         0.763         0.203         0.034        517         0.317
+sandylikesfrogs           4778         0.797         0.084         0.119        907         0.148
+Spartan Mathematics       4480         0.897         0.085         0.018        821         0.139
+3betblind                29807         0.511         0.276         0.214       6993         0.638
+
+## Postflop: selected teams
+                     post_unbet_n  post_bet  post_bet_size_med  post_bet_allin  post_facing_n  post_fold  post_call  post_raise
+team                                                                                                                           
+TeamBallHog                  3057     0.788              0.659           0.084           1844      0.528      0.392       0.081
+AZ                           2006     0.609              0.671           0.115           1241      0.528      0.439       0.033
+pocket rockets               3555     0.557              0.560           0.044           2116      0.519      0.419       0.062
+Always Folds                 2717     0.582              0.745           0.073           1783      0.378      0.508       0.114
+2 Curry                      2335     0.668              0.500           0.074           1439      0.645      0.300       0.056
+Team 72                      2549     0.673              0.750           0.071           1383      0.538      0.393       0.069
+sandylikesfrogs              2513     0.830              0.500           0.071           1544      0.453      0.334       0.212
+Spartan Mathematics          1389     0.617              0.624           0.132            871      0.352      0.622       0.025
+3betblind                   36413     0.426              0.500           0.034          20116      0.139      0.647       0.214
+
+## Spearman correlation of each stat with points per table (teams with >=300 hands)
+bust<=30h           -0.634
+bigCall_rate        -0.396
+open_limp           -0.281
+VPIP                -0.255
+post_raise          -0.208
+vsRaise_3bet        -0.183
+vsRaise_call        -0.144
+open_size_bb_med    -0.094
+post_call            0.048
+post_bet_size_med    0.071
+PFR                  0.088
+post_facing_n        0.098
+post_unbet_n         0.113
+post_bet_allin       0.145
+post_fold            0.176
+open_fold            0.181
+post_bet             0.183
+bigCall_n            0.212
+open_raise           0.244
+open_shove           0.273
+vsRaise_fold         0.337
+vsRaise_n            0.600
+unopened_n           0.669
+
+## Unopened pots by stack depth (bb): share folding / shoving / raising (n)
+TeamBallHog            | <10: fold 0.36 shove 0.57 raise 0.00 (n=129) | 10-20: fold 0.40 shove 0.38 raise 0.18 (n=531) | 20-40: fold 0.36 shove 0.12 raise 0.45 (n=1651) | 40+: fold 0.43 shove 0.07 raise 0.46 (n=5109)
+AZ                     | <10: fold 0.78 shove 0.20 raise 0.01 (n=459) | 10-20: fold 0.60 shove 0.06 raise 0.31 (n=804) | 20-40: fold 0.55 shove 0.02 raise 0.41 (n=1961) | 40+: fold 0.59 shove 0.03 raise 0.37 (n=4854)
+pocket rockets         | <10: fold 0.26 shove 0.27 raise 0.11 (n=325) | 10-20: fold 0.29 shove 0.02 raise 0.42 (n=802) | 20-40: fold 0.30 shove 0.00 raise 0.47 (n=1425) | 40+: fold 0.35 shove 0.00 raise 0.39 (n=5368)
+Always Folds           | <10: fold 0.36 shove 0.62 raise 0.00 (n=152) | 10-20: fold 0.50 shove 0.27 raise 0.19 (n=557) | 20-40: fold 0.46 shove 0.11 raise 0.38 (n=1397) | 40+: fold 0.57 shove 0.06 raise 0.33 (n=4936)
+2 Curry                | <10: fold 0.14 shove 0.42 raise 0.40 (n=291) | 10-20: fold 0.22 shove 0.14 raise 0.62 (n=851) | 20-40: fold 0.30 shove 0.03 raise 0.65 (n=1568) | 40+: fold 0.42 shove 0.01 raise 0.54 (n=4319)
+Team 72                | <10: fold 0.80 shove 0.14 raise 0.01 (n=484) | 10-20: fold 0.68 shove 0.01 raise 0.27 (n=555) | 20-40: fold 0.58 shove 0.00 raise 0.37 (n=1523) | 40+: fold 0.58 shove 0.01 raise 0.37 (n=4811)
+sandylikesfrogs        | <10: fold 0.63 shove 0.04 raise 0.20 (n=513) | 10-20: fold 0.62 shove 0.02 raise 0.21 (n=701) | 20-40: fold 0.56 shove 0.01 raise 0.29 (n=1779) | 40+: fold 0.49 shove 0.01 raise 0.36 (n=4073)
+Spartan Mathematics    | <10: fold 0.37 shove 0.58 raise 0.02 (n=563) | 10-20: fold 0.51 shove 0.03 raise 0.42 (n=1069) | 20-40: fold 0.56 shove 0.03 raise 0.37 (n=1440) | 40+: fold 0.71 shove 0.01 raise 0.25 (n=3293)
+3betblind              | <10: fold 0.64 shove 0.02 raise 0.18 (n=1429) | 10-20: fold 0.66 shove 0.00 raise 0.21 (n=1802) | 20-40: fold 0.60 shove 0.00 raise 0.23 (n=4154) | 40+: fold 0.65 shove 0.00 raise 0.21 (n=33574)
+
+## Showdown hands and exposure choice (from shown retained cards)
+TeamBallHog            n= 990  exposes higher card 0.23  pocket pair kept 0.30  exposed pairs flop 0.09  hidden pairs flop 0.41
+AZ                     n= 805  exposes higher card 0.27  pocket pair kept 0.34  exposed pairs flop 0.09  hidden pairs flop 0.36
+pocket rockets         n=1137  exposes higher card 0.30  pocket pair kept 0.31  exposed pairs flop 0.12  hidden pairs flop 0.36
+Always Folds           n= 979  exposes higher card 0.28  pocket pair kept 0.31  exposed pairs flop 0.14  hidden pairs flop 0.37
+2 Curry                n= 881  exposes higher card 0.51  pocket pair kept 0.31  exposed pairs flop 0.10  hidden pairs flop 0.41
+Team 72                n= 808  exposes higher card 0.20  pocket pair kept 0.35  exposed pairs flop 0.10  hidden pairs flop 0.39
+sandylikesfrogs        n= 801  exposes higher card 0.17  pocket pair kept 0.34  exposed pairs flop 0.23  hidden pairs flop 0.23
+Spartan Mathematics    n= 659  exposes higher card 0.21  pocket pair kept 0.36  exposed pairs flop 0.08  hidden pairs flop 0.39
+3betblind              n=14188  exposes higher card 0.00  pocket pair kept 0.22  exposed pairs flop 0.22  hidden pairs flop 0.20
+starter-kit/.venv/bin/python analysis/profile.py   11.28s user 0.85s system 73% cpu 16.528 total

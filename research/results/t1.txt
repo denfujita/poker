@@ -1,0 +1,1 @@
+.venv/bin/poker-agent play ../bots/v1-live $M $M $M $M $M $M $M --tables 100   6.10s user 0.36s system 160% cpu 4.020 total

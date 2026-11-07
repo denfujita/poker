@@ -1,0 +1,118 @@
+{
+  "seed": "s2",
+  "tables": 200,
+  "bots": {
+    "v1-live#0": {
+      "average_points": 4.1,
+      "places": {
+        "1": 7,
+        "2": 5,
+        "3": 16,
+        "4": 22,
+        "5": 34,
+        "6": 32,
+        "7": 43,
+        "8": 41
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#1": {
+      "average_points": 12.709,
+      "places": {
+        "1": 26,
+        "2": 29,
+        "3": 18,
+        "4": 18,
+        "5": 29,
+        "6": 27,
+        "7": 26,
+        "8": 27
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#2": {
+      "average_points": 13.484,
+      "places": {
+        "1": 27,
+        "2": 34,
+        "3": 17,
+        "4": 21,
+        "5": 29,
+        "6": 29,
+        "7": 22,
+        "8": 21
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#3": {
+      "average_points": 13.881,
+      "places": {
+        "1": 28,
+        "2": 28,
+        "3": 27,
+        "4": 25,
+        "5": 17,
+        "6": 27,
+        "7": 25,
+        "8": 23
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#4": {
+      "average_points": 13.191,
+      "places": {
+        "1": 26,
+        "2": 27,
+        "3": 26,
+        "4": 30,
+        "5": 26,
+        "6": 25,
+        "7": 19,
+        "8": 21
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#5": {
+      "average_points": 13.732,
+      "places": {
+        "1": 28,
+        "2": 24,
+        "3": 31,
+        "4": 29,
+        "5": 23,
+        "6": 24,
+        "7": 21,
+        "8": 20
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#6": {
+      "average_points": 12.67,
+      "places": {
+        "1": 25,
+        "2": 21,
+        "3": 33,
+        "4": 33,
+        "5": 25,
+        "6": 18,
+        "7": 28,
+        "8": 17
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#7": {
+      "average_points": 16.233,
+      "places": {
+        "1": 33,
+        "2": 32,
+        "3": 32,
+        "4": 22,
+        "5": 19,
+        "6": 20,
+        "7": 23,
+        "8": 19
+      },
+      "failed_decisions": 0
+    }
+  }
+}

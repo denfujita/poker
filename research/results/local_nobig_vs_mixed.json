@@ -1,0 +1,106 @@
+{
+  "seed": "s3",
+  "tables": 200,
+  "bots": {
+    "v1-nobigcall#0": {
+      "average_points": 26.35,
+      "places": {
+        "1": 98,
+        "2": 9,
+        "3": 5,
+        "4": 9,
+        "5": 19,
+        "6": 27,
+        "7": 33
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#1": {
+      "average_points": 15.418,
+      "places": {
+        "1": 37,
+        "2": 31,
+        "3": 15,
+        "4": 9,
+        "5": 44,
+        "6": 44,
+        "7": 19,
+        "8": 1
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#2": {
+      "average_points": 14.303,
+      "places": {
+        "1": 26,
+        "2": 44,
+        "3": 13,
+        "4": 12,
+        "5": 40,
+        "6": 42,
+        "7": 22,
+        "8": 1
+      },
+      "failed_decisions": 0
+    },
+    "tight_jammer#3": {
+      "average_points": 17.329,
+      "places": {
+        "1": 33,
+        "2": 46,
+        "3": 21,
+        "4": 19,
+        "5": 33,
+        "6": 35,
+        "7": 13
+      },
+      "failed_decisions": 0
+    },
+    "min_raiser#4": {
+      "average_points": 0.25,
+      "places": {
+        "1": 1,
+        "4": 8,
+        "5": 9,
+        "6": 30,
+        "7": 99,
+        "8": 53
+      },
+      "failed_decisions": 0
+    },
+    "min_raiser#5": {
+      "average_points": 1.25,
+      "places": {
+        "1": 5,
+        "4": 10,
+        "5": 8,
+        "6": 24,
+        "7": 108,
+        "8": 45
+      },
+      "failed_decisions": 0
+    },
+    "check_or_fold#6": {
+      "average_points": 12.55,
+      "places": {
+        "2": 33,
+        "3": 76,
+        "4": 69,
+        "5": 19,
+        "6": 3
+      },
+      "failed_decisions": 0
+    },
+    "check_or_fold#7": {
+      "average_points": 12.55,
+      "places": {
+        "2": 37,
+        "3": 70,
+        "4": 64,
+        "5": 28,
+        "6": 1
+      },
+      "failed_decisions": 0
+    }
+  }
+}
