@@ -91,6 +91,12 @@ Use the same seed and opponent ordering to compare versions, then calculate unce
 
 Default bots are intentionally weak. Scores against them are diagnostic benchmarks, not a forecast of performance against the tournament field.
 
+## V6 paired comparison
+
+Across **200 matched pairs** against a fixed field of seven tight-v4 bots, v6 averaged **14.70 points** versus **14.60** for sampled-side-pot v5. Only **one score changed** (+20); the paired mean difference was **+0.10 points/table**, with a 95% t interval of **−0.097 to +0.297**. This comparison does not establish stronger play. Both versions had zero failed decisions in the benchmark.
+
+See the [v6 validation and aggregate report](benchmarks/exact-river-v6-validation.md) and [JSON](benchmarks/exact-river-v6-validation.json) for exact source hashes, matched seeds, settings, failures, and timing limitations. The reference-bot match and mathematical regressions establish specific checks, not tournament-field performance.
+
 ## Historical practice v5 paired comparison
 
 These results measure sampled-side-pot v5, not v6. Across **200 matched pairs** against seven copies of tight v4, practice v5 averaged **14.60 points** versus **14.15** for the control. Only **four paired scores changed** (+20, +20, +20, +30); the mean difference of **+0.45** is limited evidence in this fixed field. The exact two-sided sign-flip test gives p = 0.125, so this does not establish a robust improvement.

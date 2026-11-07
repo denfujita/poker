@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "title": "Exact-river v6 validation and matched comparison against sidepot v5",
+  "date_utc": "2026-11-07",
+  "source_hashes": {
+    "exact_river_v6_agent_py_sha256": "2fe4de9a0d6f35fc5c3bb0aaccf47699e81e0eef2346662ac825d2f67e0f19d5",
+    "sidepot_v5_baseline_agent_py_sha256": "b208a8970bfc314471e07efe1279815704749e2c4c2270b707be9b39b698d7de",
+    "v4_opponent_agent_py_sha256": "47f1af369299958021af7a76b05940b5cbfbf935e9c1ebae7e823dc3f4cb8a33",
+    "unchanged_preflop_policy_json_sha256": "8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98",
+    "checked_candidate_bundle_sha256": "8ed98ab3044dbd5c17a367350ebbb4082cd09f919fdcea5588c0d30654a9a2a1"
+  },
+  "paired_comparison": {
+    "field": "One candidate or baseline against the same seven copies of v4; randomized initial seats.",
+    "tables_per_version": 200,
+    "seed_batches": [
+      {
+        "seed": "mixed-jam-v5-strong-a",
+        "tables": 100
+      },
+      {
+        "seed": "mixed-jam-v5-strong-b",
+        "tables": 100
+      }
+    ],
+    "matched_initial_seating_and_deal_seeds_verified": true,
+    "authoritative_points_and_stacks_verified": true,
+    "settings": {
+      "variant": "flop_discard_reveal",
+      "players": 8,
+      "starting_stack": 2000,
+      "blinds": [
+        {
+          "small_blind": 10,
+          "big_blind": 20,
+          "ante": 0
+        },
+        {
+          "small_blind": 20,
+          "big_blind": 40,
+          "ante": 0
+        },
+        {
+          "small_blind": 30,
+          "big_blind": 60,
+          "ante": 0
+        },
+        {
+          "small_blind": 50,
+          "big_blind": 100,
+          "ante": 0
+        },
+        {
+          "small_blind": 80,
+          "big_blind": 160,
+          "ante": 0
+        },
+        {
+          "small_blind": 125,
+          "big_blind": 250,
+          "ante": 0
+        },
+        {
+          "small_blind": 200,
+          "big_blind": 400,
+          "ante": 0
+        },
+        {
+          "small_blind": 300,
+          "big_blind": 600,
+          "ante": 0
+        },
+        {
+          "small_blind": 500,
+          "big_blind": 1000,
+          "ante": 0
+        },
+        {
+          "small_blind": 800,
+          "big_blind": 1600,
+          "ante": 0
+        },
+        {
+          "small_blind": 1200,
+          "big_blind": 2400,
+          "ante": 0
+        },
+        {
+          "small_blind": 2000,
+          "big_blind": 4000,
+          "ante": 0
+        }
+      ],
+      "hands_per_level": 20,
+      "hand_cap": 250,
+      "decision_ms": 1,
+      "time_bank_ms": 100,
+      "memory_bytes": 65536,
+      "resampling_continuations": 1,
+      "resampling_threshold": 4,
+      "icm_luck_correction": false,
+      "icm_luck_correction_mode": "legacy",
+      "payouts": [
+        50,
+        30,
+        20
+      ],
+      "concurrency": 2
+    },
+    "exact_river_v6": {
+      "mean_points": 14.7,
+      "finishing_positions": {
+        "1": 25,
+        "2": 37,
+        "3": 29,
+        "4": 19,
+        "5": 24,
+        "6": 20,
+        "7": 19,
+        "8": 27
+      },
+      "first_place_count": 25,
+      "first_place_rate": 0.125,
+      "top_three_count": 91,
+      "top_three_rate": 0.455,
+      "failed_decisions": 0,
+      "decisions": 29211,
+      "all_bot_failed_decisions": 0,
+      "all_bot_decisions": 222206,
+      "hand_cap_stops": 0,
+      "average_hands": 144.09
+    },
+    "sidepot_v5_baseline": {
+      "mean_points": 14.6,
+      "finishing_positions": {
+        "1": 25,
+        "2": 37,
+        "3": 28,
+        "4": 19,
+        "5": 24,
+        "6": 20,
+        "7": 20,
+        "8": 27
+      },
+      "first_place_count": 25,
+      "first_place_rate": 0.125,
+      "top_three_count": 90,
+      "top_three_rate": 0.45,
+      "failed_decisions": 0,
+      "decisions": 29084,
+      "all_bot_failed_decisions": 0,
+      "all_bot_decisions": 222156,
+      "hand_cap_stops": 0,
+      "average_hands": 144.165
+    },
+    "paired_mean_points_delta": 0.1,
+    "paired_t_ci95": [
+      -0.0971956544,
+      0.2971956544
+    ],
+    "changed_table_score_count": 1,
+    "paired_score_delta_frequency": [
+      {
+        "delta": 0,
+        "tables": 199
+      },
+      {
+        "delta": 20,
+        "tables": 1
+      }
+    ],
+    "by_seed": [
+      {
+        "seed": "mixed-jam-v5-strong-a",
+        "candidate_mean": 13.9,
+        "baseline_mean": 13.7,
+        "paired_delta": 0.2,
+        "ci95_t": [
+          -0.19684339,
+          0.5968433900000001
+        ],
+        "changed_table_scores": 1
+      },
+      {
+        "seed": "mixed-jam-v5-strong-b",
+        "candidate_mean": 15.5,
+        "baseline_mean": 15.5,
+        "paired_delta": 0.0,
+        "ci95_t": [
+          0.0,
+          0.0
+        ],
+        "changed_table_scores": 0
+      }
+    ],
+    "interpretation": "Only one of 200 matched scores changed, by +20 points. The approximate paired Student-t 95% interval crosses zero. This does not establish improved strength or predict tournament-field performance."
+  },
+  "required_reference_match": {
+    "seed": "exact-river-v6-reference",
+    "tables": 200,
+    "players": 3,
+    "field": [
+      "candidate",
+      "check_or_fold",
+      "min_raiser"
+    ],
+    "payouts": [
+      50,
+      30,
+      20
+    ],
+    "results": {
+      "candidate": {
+        "mean_points": 43.35,
+        "finishing_positions": {
+          "1": 154,
+          "2": 5,
+          "3": 41
+        },
+        "failed_decisions": 0
+      },
+      "check_or_fold": {
+        "mean_points": 29.5,
+        "finishing_positions": {
+          "2": 190,
+          "3": 10
+        },
+        "failed_decisions": 0
+      },
+      "min_raiser": {
+        "mean_points": 27.15,
+        "finishing_positions": {
+          "1": 46,
+          "2": 5,
+          "3": 149
+        },
+        "failed_decisions": 0
+      }
+    },
+    "interpretation": "A functional reference-bot check; all three places pay. It is not a competitive tournament-field strength estimate."
+  },
+  "validation": {
+    "bundle_checker": {
+      "passed": true,
+      "bundle_size_bytes": 97962,
+      "files": [
+        "agent.py",
+        "preflop_policy.json"
+      ]
+    },
+    "legal_action_checks_passed": 342,
+    "memory_checks_passed": 90,
+    "independent_equity_oracle": {
+      "checks": 124,
+      "synthetic_cases": 60,
+      "failed": 0,
+      "max_absolute_equity_error": 1.9984014443252818e-14,
+      "previously_incorrect_calls_now_fold_count": 2,
+      "private_case_content_included": false
+    },
+    "public_equity_oracle": {
+      "passed": 150,
+      "failed": 0,
+      "joint_cases": 30,
+      "max_absolute_error": 3.3306690738754696e-15
+    },
+    "sidepot_regressions": {
+      "passed": 21,
+      "failed": 0
+    },
+    "zero_time_bank_match": {
+      "tables": 10,
+      "hand_cap": 20,
+      "decision_ms": 1,
+      "time_bank_ms": 0,
+      "candidate_decisions": 100,
+      "candidate_failed_decisions": 0,
+      "opponent_decisions": 181,
+      "opponent_failed_decisions": 0,
+      "process_errors": 0
+    },
+    "runtime": {
+      "units": "microseconds",
+      "scope": "Direct act timings exclude host and wire overhead; no strict 1 ms guarantee is established.",
+      "normal_act": {
+        "n": 3420,
+        "p50_us": 192.397,
+        "p99_us": 676.989,
+        "max_us": 751.953,
+        "over_1ms": 0
+      },
+      "exact_river_branch": {
+        "states": 24,
+        "unknown_cards": 42,
+        "opponents": 2,
+        "exposed_per_opponent": 1,
+        "range_contexts_per_opponent": 2,
+        "pot_groups_min": 2,
+        "timing": {
+          "n": 960,
+          "p50_us": 424.489,
+          "p99_us": 479.044,
+          "max_us": 519.7,
+          "over_1ms": 0
+        },
+        "includes": [
+          "joint integration",
+          "range construction",
+          "pot pricing"
+        ]
+      },
+      "isolated_unchanged_selection_branch": {
+        "players": 8,
+        "states": 12,
+        "contender_groups_per_state": 7,
+        "timing": {
+          "n": 480,
+          "p50_us": 375.817,
+          "p99_us": 425.921,
+          "max_us": 2041.765,
+          "over_1ms": 1
+        },
+        "concurrent_simulations": false
+      },
+      "interleaved_selection_comparison": {
+        "players": 8,
+        "states": 12,
+        "contender_groups_per_state": 7,
+        "repeats_per_state_per_version": 40,
+        "same_process": true,
+        "model_data_heap_note": "Both immutable versions loaded together, increasing the model-data heap.",
+        "sidepot_v5_baseline": {
+          "wall": {
+            "n": 480,
+            "p50_us": 378.20849999999996,
+            "p99_us": 420.03,
+            "max_us": 429.544,
+            "over_1ms": 0
+          },
+          "cpu": {
+            "n": 480,
+            "p50_us": 377.515,
+            "p99_us": 419.25,
+            "max_us": 426.709,
+            "over_1ms": 0
+          }
+        },
+        "exact_river_v6": {
+          "wall": {
+            "n": 480,
+            "p50_us": 378.49800000000005,
+            "p99_us": 428.315,
+            "max_us": 439.918,
+            "over_1ms": 0
+          },
+          "cpu": {
+            "n": 480,
+            "p50_us": 377.806,
+            "p99_us": 427.469,
+            "max_us": 439.012,
+            "over_1ms": 0
+          }
+        },
+        "interpretation": "The isolated selection outlier did not recur in this interleaved comparison. Its cause is not established; garbage-collection observations do not establish causation."
+      }
+    }
+  },
+  "limitations": [
+    "Exactness is conditional on the existing heuristic opponent-range model; it is not calibrated opponent probabilities or a GTO policy.",
+    "One changed score among 200 matched tables is sparse evidence. The paired t interval is approximate and crosses zero; no strength improvement is claimed.",
+    "The fixed seven-v4 field and simple three-player reference field do not predict tournament-field performance.",
+    "An isolated direct-act selection call reached 2.041765 ms even though the exact-river branch and interleaved comparison stayed below 1 ms. The cause is unresolved and a strict 1 ms bound is not guaranteed.",
+    "Zero observed failed decisions in these runs does not prove a zero future failure rate."
+  ],
+  "privacy": {
+    "content": "Sanitized aggregates, public settings, random seeds and source hashes only.",
+    "excluded": [
+      "private card states",
+      "private histories",
+      "raw per-table results",
+      "account identifiers",
+      "credentials",
+      "filesystem paths"
+    ]
+  }
+}

@@ -23,4 +23,4 @@ python tools/check_exact_river.py agent.py
 python tools/check_side_pots.py agent.py --baseline /path/to/tight-v4/agent.py
 ```
 
-The paired field benchmarks describe earlier versions. No full v6 paired-field comparison is claimed, and mathematical correctness or reference-bot results do not establish improved tournament-field strength.
+In 200 matched pairs against a fixed field of seven tight-v4 opponents, v6 averaged 14.70 points versus 14.60 for v5. Only one score changed (+20); the paired 95% t interval for the +0.10 mean difference spans −0.097 to +0.297. This does not establish stronger play. See the [v6 aggregate report](../benchmarks/exact-river-v6-validation.md). Mathematical correctness and reference-bot results also do not establish improved tournament-field strength.
