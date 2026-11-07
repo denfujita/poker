@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "title": "Frozen heads-up exact-river candidate validation",
+  "date_utc": "2026-11-07",
+  "source_hashes": {
+    "candidate_agent_py_sha256": "38ed571635c946ccd65ece23893f37b6a27cd72fb82e1d8a36805ac06dc96112",
+    "baseline_and_seven_opponents_agent_py_sha256": "2fe4de9a0d6f35fc5c3bb0aaccf47699e81e0eef2346662ac825d2f67e0f19d5",
+    "preflop_policy_json_sha256": "8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98",
+    "checked_zip_sha256": "6b856bbac82f852c6be3e0e293448a7a9c1b0388ab41df805af9f7e6d943c5c9"
+  },
+  "paired_comparison": {
+    "field": "Candidate or v6 baseline against seven frozen v6 copies; matched randomized initial seating and deal seeds.",
+    "tables_per_version": 200,
+    "settings": {
+      "players": 8,
+      "starting_stack": 2000,
+      "starting_blinds": [
+        10,
+        20
+      ],
+      "hands_per_level": 20,
+      "hand_cap": 250,
+      "payouts": [
+        50,
+        30,
+        20
+      ],
+      "decision_ms": 1,
+      "time_bank_ms": 100
+    },
+    "matching_and_point_stack_conservation_verified": true,
+    "by_seed": [
+      {
+        "seed": "hu-exact-v7-strong-a",
+        "tables": 100,
+        "candidate_mean": 14.0,
+        "baseline_mean": 14.5,
+        "paired_delta": -0.5,
+        "paired_t_ci95": [
+          -1.4511790116990844,
+          0.45117901169908436
+        ],
+        "changed_scores": 4
+      },
+      {
+        "seed": "hu-exact-v7-strong-b",
+        "tables": 100,
+        "candidate_mean": 14.5,
+        "baseline_mean": 14.3,
+        "paired_delta": 0.2,
+        "paired_t_ci95": [
+          -1.1222098864254841,
+          1.522209886425484
+        ],
+        "changed_scores": 6
+      }
+    ],
+    "candidate": {
+      "tables": 200,
+      "mean_points": 14.25,
+      "finishing_positions": {
+        "1": 28,
+        "2": 27,
+        "3": 32,
+        "4": 18,
+        "5": 22,
+        "6": 20,
+        "7": 19,
+        "8": 34
+      },
+      "first_place_count": 28,
+      "top_three_count": 87,
+      "positive_points_count": 87,
+      "candidate_failed_decisions": 0,
+      "candidate_decisions": 28099,
+      "all_bot_failed_decisions": 3,
+      "all_bot_decisions": 223345,
+      "average_hands": 144.435,
+      "hand_cap_stops": 0
+    },
+    "baseline": {
+      "tables": 200,
+      "mean_points": 14.4,
+      "finishing_positions": {
+        "1": 30,
+        "2": 28,
+        "3": 27,
+        "4": 19,
+        "5": 26,
+        "6": 19,
+        "7": 21,
+        "8": 30
+      },
+      "first_place_count": 30,
+      "top_three_count": 85,
+      "positive_points_count": 85,
+      "candidate_failed_decisions": 0,
+      "candidate_decisions": 28403,
+      "all_bot_failed_decisions": 2,
+      "all_bot_decisions": 223323,
+      "average_hands": 143.95,
+      "hand_cap_stops": 0
+    },
+    "paired_mean_points_delta": -0.15,
+    "paired_t_ci95": [
+      -0.9588114884065003,
+      0.6588114884065003
+    ],
+    "stratified_table_bootstrap_ci95": [
+      -1.0,
+      0.6
+    ],
+    "bootstrap_replicates": 10000,
+    "no_failed_decision_pair_sensitivity": {
+      "included_pairs": 196,
+      "excluded_pairs": 4,
+      "paired_mean_delta": -0.15306122448979592,
+      "paired_t_ci95": [
+        -0.978519325363334,
+        0.672396876383742
+      ],
+      "excluded_pair_deltas_all_zero": true,
+      "scope": "Sensitivity only; primary result retains all preselected tables."
+    },
+    "changed_table_scores": 10,
+    "delta_frequencies": [
+      {
+        "delta": -50.0,
+        "tables": 1
+      },
+      {
+        "delta": -30.0,
+        "tables": 2
+      },
+      {
+        "delta": -10.0,
+        "tables": 2
+      },
+      {
+        "delta": 0.0,
+        "tables": 190
+      },
+      {
+        "delta": 10.0,
+        "tables": 1
+      },
+      {
+        "delta": 20.0,
+        "tables": 3
+      },
+      {
+        "delta": 30.0,
+        "tables": 1
+      }
+    ]
+  },
+  "required_reference_match": {
+    "seed": "hu-exact-v7-38ed5716-reference",
+    "tables": 200,
+    "players": 3,
+    "results": {
+      "candidate": {
+        "average_points": 42.75,
+        "places": {
+          "1": 148,
+          "2": 11,
+          "3": 41
+        },
+        "failed_decisions": 0
+      },
+      "check_or_fold": {
+        "average_points": 29.05,
+        "places": {
+          "2": 181,
+          "3": 19
+        },
+        "failed_decisions": 0
+      },
+      "min_raiser": {
+        "average_points": 28.2,
+        "places": {
+          "1": 52,
+          "2": 8,
+          "3": 140
+        },
+        "failed_decisions": 0
+      }
+    }
+  },
+  "validation": {
+    "checker_passed": true,
+    "zip_files": [
+      "agent.py",
+      "preflop_policy.json"
+    ],
+    "zip_size_bytes": 98166,
+    "legal_checks": 342,
+    "malformed_memory_checks": 90,
+    "public_oracle": {
+      "passed": 335,
+      "failed": 0,
+      "synthetic_exact_cases": 58,
+      "baseline_sampling_errors_reproduced": 39,
+      "maximum_absolute_error": 3.608224830031759e-16
+    },
+    "independent_oracle": {
+      "comparisons": 961,
+      "causal_hu_states": 901,
+      "expected_changed_actions": 84,
+      "expected_actions_matched": 84,
+      "two_opponent_states_unchanged": 40,
+      "other_scope_states_unchanged": 682,
+      "maximum_absolute_equity_error": 0.0
+    },
+    "zero_bank": {
+      "tables": 10,
+      "hand_cap": 20,
+      "decision_ms": 1,
+      "time_bank_ms": 0,
+      "totals": {
+        "candidate": {
+          "decisions": 100,
+          "failed_decisions": 0,
+          "failure_rate": 0.0
+        },
+        "opponent": {
+          "decisions": 186,
+          "failed_decisions": 0,
+          "failure_rate": 0.0
+        }
+      }
+    },
+    "runtime": {
+      "units": "microseconds",
+      "normal_first": {
+        "n": 3420,
+        "p50_us": 207.627,
+        "p99_us": 726.547,
+        "max_us": 1097.413,
+        "over_1ms": 1
+      },
+      "normal_repeat": {
+        "n": 3420,
+        "p50_us": 211.076,
+        "p99_us": 737.072,
+        "max_us": 802.72,
+        "over_1ms": 0
+      },
+      "exact_hu_branch": {
+        "states": 24,
+        "possible_hidden_cards": 43,
+        "range_contexts": 2,
+        "wall_latency": {
+          "n": 960,
+          "p50_us": 254.1725,
+          "p99_us": 287.097,
+          "max_us": 428.751,
+          "over_1ms": 0
+        },
+        "cpu_latency": {
+          "n": 960,
+          "p50_us": 253.4945,
+          "p99_us": 285.953,
+          "max_us": 427.535,
+          "over_1ms": 0
+        }
+      },
+      "scope": "Direct act timings exclude host and wire overhead. One initial normal turn call exceeded 1 ms; the new exact branch and normal repeat did not. No strict maximum bound is established."
+    }
+  },
+  "limitations": [
+    "The matched point estimate is negative, confidence intervals span zero and seed directions disagree; no tournament-point improvement is established.",
+    "Five opponent failed decisions occurred across four paired tables. Both heroes had zero failures, and all four affected paired hero-score deltas were zero.",
+    "Exactness concerns the existing heuristic range model, not opponent calibration or GTO.",
+    "Fixed-state chip-equity correctness and modeled chip EV do not establish improved tournament-point utility.",
+    "The seven-copy v6 field and weak three-player reference field do not predict tournament-field performance.",
+    "Only the identified frozen two-file bundle was tested. A newer integrated bot or changed base requires fresh validation.",
+    "Zero observed failed decisions does not establish zero future risk."
+  ],
+  "privacy": {
+    "included": "Sanitized aggregates, fixed synthetic seeds, public settings and hashes only.",
+    "excluded": [
+      "raw table records",
+      "private card states",
+      "histories",
+      "account identifiers",
+      "credentials",
+      "filesystem paths"
+    ]
+  }
+}

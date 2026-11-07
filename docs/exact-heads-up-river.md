@@ -12,8 +12,13 @@ The result is exact within the existing heuristic range model. It does not calib
 ## Evidence and status
 
 - `tools/check_heads_up_river.py` passes 335 assertions with a frozen v6 baseline, or 174 without it. Its 58 synthetic equity cases cover weights, ties, blockers, and group shape; the baseline run reproduces sampling error and checks 80 excluded-domain cases in ordinary and grouped modes.
-- An independent audit passed 1,354 assertions and 941 replayed river states. Private cards and replay fixtures are not published.
-- Remote safety, timing, normal-engine matches, and deployment remain pending. Main and the active upload are unchanged v6. No new strength claim is made.
+- The final independent oracle/replay review verified 961 comparisons and all 84 expected action changes across 901 causal heads-up states. Forty two-opponent states and 682 additional out-of-scope states remained unchanged. Private cards and replay fixtures are not published.
+- The package checker, 342 legal-action checks, 90 malformed-memory checks, and the zero-bank probe (0/100 candidate failures) passed. The required 200-table reference match averaged 42.75 points with zero failed decisions.
+- In 200 matched pairs against seven frozen v6 opponents, this candidate averaged 14.25 points versus 14.40 for v6: **−0.15 points**, approximate paired 95% t interval **[−0.959, +0.659]**. Ten scores changed and the two seeds disagreed in direction. No tournament-point improvement is demonstrated.
+- Both heroes had zero failures (candidate 0/28,099 decisions). Opponents had five failures across four paired tables; all four hero-score deltas were zero. The sensitivity analysis excluding them gave −0.153 points over 196 pairs. The primary result retains all 200 preselected pairs.
+- The exact heads-up branch's 960 timed calls had p99 0.287 ms and maximum 0.429 ms. One first-run normal turn call reached 1.097 ms; its repeat stayed below 0.803 ms. These direct timings exclude host/wire overhead and establish no strict 1 ms bound.
+
+The [final sanitized report](../validation/heads-up-river-candidate.md) and [JSON](../validation/heads-up-river-candidate.json) pin the sources, settings, seeds, counts, and limits. The integration owner controls the combined source, final main promotion, and tournament upload. Apply only the narrow source/test patch; do not overwrite a newer combined bot. A changed integration base requires fresh validation.
 
 Run with the official kit environment and keep each source's policy sidecar alongside it:
 
@@ -21,4 +26,4 @@ Run with the official kit environment and keep each source's policy sidecar alon
 python tools/check_heads_up_river.py agent.py --baseline /path/to/frozen-v6/agent.py
 ```
 
-The existing public benchmark reports apply to their named source hashes, not this candidate.
+Earlier public benchmark reports apply to their named source hashes. Only the final heads-up candidate report above measures this frozen source.
