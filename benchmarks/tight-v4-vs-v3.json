@@ -1,0 +1,108 @@
+{
+  "comparison": "tight-v4 hero versus final-v3 hero, each against seven final-v3 opponents",
+  "tables_per_version": 200,
+  "seed_batches": [
+    {
+      "seed": "preflop-jamfold-strong-a",
+      "tables": 100,
+      "v4_mean_points": 24.3,
+      "v3_control_mean_points": 12.8,
+      "paired_mean_delta": 11.5
+    },
+    {
+      "seed": "preflop-jamfold-strong-b",
+      "tables": 100,
+      "v4_mean_points": 22.7,
+      "v3_control_mean_points": 15.0,
+      "paired_mean_delta": 7.7
+    }
+  ],
+  "variant": "flop_discard_reveal",
+  "players": 8,
+  "starting_stack": 2000,
+  "hands_per_level": 20,
+  "hand_cap": 250,
+  "payouts": [
+    50,
+    30,
+    20
+  ],
+  "decision_ms": 1,
+  "time_bank_ms": 100,
+  "concurrency": 2,
+  "candidate": {
+    "name": "tight-v4",
+    "source_sha256": "47f1af369299958021af7a76b05940b5cbfbf935e9c1ebae7e823dc3f4cb8a33",
+    "asset_sha256": "8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98",
+    "mean_points": 23.5,
+    "wins": 25,
+    "top_three": 158,
+    "finishing_positions": {
+      "4": 24,
+      "3": 54,
+      "1": 25,
+      "2": 79,
+      "5": 10,
+      "7": 4,
+      "6": 3,
+      "8": 1
+    },
+    "failed_decisions": 0,
+    "decisions": 33255
+  },
+  "control": {
+    "name": "action-aware-v3",
+    "source_sha256": "2a831f886d03232967bc826ee25a6ad013797c9810308e970ace229601f650cd",
+    "mean_points": 13.9,
+    "wins": 33,
+    "top_three": 79,
+    "finishing_positions": {
+      "2": 21,
+      "1": 33,
+      "5": 35,
+      "4": 22,
+      "6": 21,
+      "7": 25,
+      "8": 18,
+      "3": 25
+    },
+    "failed_decisions": 0,
+    "decisions": 19092
+  },
+  "paired_statistics": {
+    "unit": "one table matched on seed and initial seating",
+    "mean_delta_points": 9.6,
+    "standard_error": 1.672779410075898,
+    "ci95_student_t": [
+      6.301351695632373,
+      12.898648304367626
+    ],
+    "degrees_of_freedom": 199,
+    "ci95_normal": [
+      6.321352356251239,
+      12.87864764374876
+    ],
+    "ci95_stratified_table_bootstrap": [
+      6.35,
+      12.85
+    ],
+    "bootstrap_resamples": 10000
+  },
+  "verification": {
+    "matched_seeds_and_initial_seats": true,
+    "authoritative_final_points": true,
+    "points_and_stacks_conserve": true,
+    "bundle_unchanged": true,
+    "candidate_field_all_bots_failed_decisions": 0,
+    "candidate_field_all_bots_decisions": 175492,
+    "control_field_all_bots_failed_decisions": 0,
+    "control_field_all_bots_decisions": 140608,
+    "independent_aggregate_review": true
+  },
+  "limitations": [
+    "This is one fixed seven-v3 field, not the unknown tournament field.",
+    "Candidate wins declined while paid finishes increased; the gain is average official points, not win rate.",
+    "Intervals are unadjusted and apply to this prespecified matched comparison.",
+    "No individual histories or raw table results are included."
+  ]
+}

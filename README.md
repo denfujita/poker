@@ -84,6 +84,12 @@ Use the same seed and opponent ordering to compare versions, then calculate unce
 
 Default bots are intentionally weak. Scores against them are diagnostic benchmarks, not a forecast of performance against the tournament field.
 
+## Tight v4 paired comparison
+
+Across **200 matched pairs of eight-player tables** against seven v3 opponents, tight v4 averaged **23.5 points** versus **13.9** for the v3 control. The paired gain was **+9.6 points/table** (95% Student-t interval **+6.30 to +12.90**). Both fixed seed batches favored v4, with zero failed decisions in either field.
+
+Top-three finishes rose from 79 to 158 of 200, while outright wins fell from 33 to 25. This is evidence about one fixed local v3 field, not the tournament field. See the [paired report](benchmarks/tight-v4-vs-v3.md) and [aggregate JSON](benchmarks/tight-v4-vs-v3.json) for seeds, exact source hashes, finish counts, and uncertainty details.
+
 ## Recorded benchmark results (historical v1)
 
 These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current tight v4 source. See [v4 validation](validation/v4.md) for its correctness and runtime checks, [v3 validation](validation/v3.md) for the earlier action model, and [v2 validation](validation/v2.md) for exposed-card conditioning.
