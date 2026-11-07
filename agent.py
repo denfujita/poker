@@ -25,9 +25,117 @@ _EVALUATE(list(_DECK[:7]))
 
 # Reviewed teammate asset: sampled three-card heads-up strength ORDERING only.
 # Neither these percentiles nor the thresholds below are a solved GTO policy.
-# Jam/call arrays in the source asset are deliberately not used as posteriors.
+# Full jam/call mixtures are used only in the restricted blind-versus-blind
+# domain below. They remain chip-EV policies for an approximate selection model.
 with open(os.path.join(os.path.dirname(__file__), "preflop_policy.json")) as _policy_file:
-    _PREFLOP_COMBOS = json.load(_policy_file)["combo"]
+    _PREFLOP_POLICY = json.load(_policy_file)
+    _PREFLOP_COMBOS = _PREFLOP_POLICY["combo"]
+
+
+def supported_jamfold_spot(state):
+    """Identify an exact supported SB/BB chip-EV spot, or keep the v4 policy.
+
+    The exported game has equal stacks, 0.5/1 blinds, no antes, and no overcalls.
+    Restricting it to the two blinds after all other seats fold avoids the
+    missing overcall model. Exact depths avoid interpolating unrelated charts.
+    The selection model and equity buckets are still approximations, not a
+    solution to the full discard/reveal tournament or its ICM objective.
+    """
+    if state.phase != "betting" or state.board or len(state.cards) != 3:
+        return None
+    blinds = state.blinds
+    if blinds.ante or blinds.small_blind <= 0 or 2 * blinds.small_blind != blinds.big_blind:
+        return None
+    alive = sorted(s.seat for s in state.seats if s.status != "busted")
+    n = len(alive)
+    if n not in (2, 3, 4, 6, 8) or state.button not in alive:
+        return None
+    after = [s for s in alive if s > state.button] + [s for s in alive if s <= state.button]
+    sb, bb = (state.button, after[0]) if n == 2 else (after[0], after[1])
+    if state.seat not in (sb, bb):
+        return None
+    seats = {s.seat: s for s in state.seats}
+    if any(s.status != "folded" or s.bet for s in state.seats if s.seat in alive and s.seat not in (sb, bb)):
+        return None
+    # Folded nonblinds contribute nothing and cannot overcall; their remaining
+    # stack sizes are irrelevant to this restricted chip-EV pot.
+    totals = [seats[i].stack + seats[i].bet for i in (sb, bb)]
+    if min(totals) != max(totals):
+        return None
+    total = totals[0]
+    depth, remainder = divmod(total, blinds.big_blind)
+    if remainder or depth not in (3, 5, 7, 10, 12, 15, 20):
+        return None
+    # Demand the actual two blind posts, with no extra dead chips or previous
+    # voluntary action. Current history is the authoritative event stream.
+    posts, raises, folded = {}, [], set()
+    for event in state.history:
+        if event.kind == "blind":
+            if event.seat in posts:
+                return None
+            posts[event.seat] = event.amount
+        elif event.kind == "fold":
+            if raises or event.seat in (sb, bb):
+                return None
+            folded.add(event.seat)
+        elif event.kind == "raise":
+            raises.append(event)
+        elif event.kind != "hand":
+            return None
+    if posts != {sb: blinds.small_blind, bb: blinds.big_blind}:
+        return None
+    if folded != set(alive) - {sb, bb}:
+        return None
+    entry = _PREFLOP_COMBOS.get("".join(sorted(state.cards)))
+    if entry is None:
+        return None
+    bucket = entry[1]
+    if state.seat == sb and not raises:
+        legal = state.can("raise")
+        if (seats[sb].status != "active" or seats[bb].status != "active"
+                or seats[sb].bet != blinds.small_blind or seats[bb].bet != blinds.big_blind
+                or state.pot != blinds.small_blind + blinds.big_blind
+                or state.to_call != blinds.big_blind - blinds.small_blind
+                or not legal or legal.max_amount != total
+                or not (legal.min_amount <= total <= legal.max_amount)):
+            return None
+        vector = _PREFLOP_POLICY.get("jam", {}).get(str(n), {}).get("SB", {}).get(str(depth))
+        action = Action.raise_to(total)
+        kind = "jam"
+    elif state.seat == bb and len(raises) == 1:
+        event = raises[0]
+        if (event.seat != sb or event.amount != total
+                or seats[sb].status != "all_in" or seats[sb].stack != 0 or seats[sb].bet != total
+                or seats[bb].status != "active" or seats[bb].bet != blinds.big_blind
+                or state.pot != total + blinds.big_blind
+                or state.to_call != total - blinds.big_blind or not state.can("call")):
+            return None
+        vector = _PREFLOP_POLICY.get("call", {}).get(str(n), {}).get("SB", {}).get(str(depth), {}).get("BB")
+        action = Action.call()
+        kind = "call"
+    else:
+        return None
+    if vector is None or not isinstance(bucket, int) or not 0 <= bucket < len(vector):
+        return None
+    probability = vector[bucket]
+    if not isinstance(probability, (int, float)) or not 0 <= probability <= 1:
+        return None
+    return action, probability, kind, n, depth
+
+
+def supported_jamfold_action(state):
+    spot = supported_jamfold_spot(state)
+    if spot is None:
+        return None
+    action, probability, kind, players, depth = spot
+    # A local seeded generator preserves fractional bucket probabilities without
+    # storing state or drawing from another table's random-number stream.
+    seed = (f"jamfold-v1:{state.config.table_id}:{state.hand_number}:{state.seat}:"
+            f"{players}:{depth}:{kind}:{''.join(sorted(state.cards))}")
+    if probability == 1 or (probability > 0 and random.Random(seed).random() < probability):
+        return action
+    # A chart fold is terminal; never fall through to v4's equity/value branches.
+    return _preflop_passive(state)
 
 def preflop_context(state):
     alive = sorted(s.seat for s in state.seats if s.status != "busted")
@@ -510,6 +618,9 @@ def decide(state: GameState) -> Action:
     preflop = state.phase == "betting" and not state.board
     percentile = None
     if preflop:
+        chosen = supported_jamfold_action(state)
+        if chosen is not None:
+            return chosen
         entry = _PREFLOP_COMBOS.get("".join(sorted(state.cards)))
         percentile = entry[0] if entry is not None else None
         chosen = preflop_action(state, percentile)

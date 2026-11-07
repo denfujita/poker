@@ -1,10 +1,12 @@
-# Tight context-aware poker bot
+# Restricted jam/fold candidate
 
-A chip-EV strategy for the NO LIMIT Bay Area flop-discard-and-reveal variant. The current source is **tight v4**, SHA-256 `47f1af369299958021af7a76b05940b5cbfbf935e9c1ebae7e823dc3f4cb8a33`.
+This branch contains an **experimental restricted jam/fold candidate**, SHA-256 `118d248bd5629cd96a06b877a9e3d4deba0ee77bf9ca0c2129fa2564370bfba2`. It has not replaced deployed tight v4 on main. Mapping and mixture checks passed; runtime and strength evaluation remain promotion requirements.
+
+The adapter uses full bucket probabilities only in exact supported small-blind versus big-blind states. Other decisions retain tight-v4 behavior. See [supported domain and tests](docs/restricted-jamfold-adapter.md).
 
 **Upload a ZIP containing both `agent.py` and `preflop_policy.json` at its root.** The bot loads the JSON at import time; uploading `agent.py` alone will fail. The `tools/` scripts are development utilities, not submission files.
 
-## Strategy
+## Baseline strategy and candidate override
 
 - Use three-card strength percentiles for position- and stack-dependent preflop openings. Defensive hands must pass an ordinal strength gate and a simulated-equity/pot-odds check; weak calls cannot fall through into a generic reraise.
 - Handle heads-up positions, busted-seat gaps, limpers, current blinds, short stacks, and all-in prices explicitly. Keep inexpensive short-stack continuations available.
@@ -12,7 +14,7 @@ A chip-EV strategy for the NO LIMIT Bay Area flop-discard-and-reveal variant. Th
 - Sample 16–24 possible showdowns. Fix each live opponent's exposed card in its hand and remove every known public card, including folded players' exposed cards, plus the bot's own discard from the remaining deck.
 - Weight opponent hands using public calls/raises and historical bet sizes. Add caution under large bets, reraises, and repeated barrels; apply a separate gate to weak reraises. Value-raise sizing uses 62% of the pot after calling, subject to legal and stack limits.
 
-The percentile ordering comes from the reviewed teammate asset; **its full jam/call bucket arrays are bundled but unused**. Opening and defense thresholds are heuristics, not the solver's policy, GTO, or ICM. Action likelihoods are also uncalibrated, and the small sample budget can give noisy estimates. The raise model assumes opponents continue and assigns no fold equity. There is no learning across tables.
+The percentile ordering comes from the reviewed teammate asset. This candidate also uses its full jam/call bucket probabilities only inside the restricted supported domain; all other opening and defense thresholds remain heuristics. Neither the charts nor the fallback solve the full variant or ICM. Action likelihoods are also uncalibrated, and the small sample budget can give noisy estimates. The raise model assumes opponents continue and assigns no fold equity. There is no learning across tables.
 
 ## Setup
 
@@ -62,8 +64,8 @@ Stage only the two runtime files, then run the kit packer and checker:
 ```sh
 mkdir -p .local/bot reports
 cp agent.py preflop_policy.json .local/bot/
-"$POKER_KIT/.venv/bin/poker-agent" pack .local/bot reports/tight-v4.zip
-"$POKER_KIT/.venv/bin/poker-agent" check reports/tight-v4.zip
+"$POKER_KIT/.venv/bin/poker-agent" pack .local/bot reports/restricted-jamfold-candidate.zip
+"$POKER_KIT/.venv/bin/poker-agent" check reports/restricted-jamfold-candidate.zip
 ```
 
 Both files must remain together for local tests and production. The JSON asset's SHA-256 is `8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98`.
@@ -84,15 +86,15 @@ Use the same seed and opponent ordering to compare versions, then calculate unce
 
 Default bots are intentionally weak. Scores against them are diagnostic benchmarks, not a forecast of performance against the tournament field.
 
-## Tight v4 paired comparison
+## Baseline tight v4 paired comparison
 
-Across **200 matched pairs of eight-player tables** against seven v3 opponents, tight v4 averaged **23.5 points** versus **13.9** for the v3 control. The paired gain was **+9.6 points/table** (95% Student-t interval **+6.30 to +12.90**). Both fixed seed batches favored v4, with zero failed decisions in either field.
+These results apply to frozen tight v4, not this candidate. Across **200 matched pairs of eight-player tables** against seven v3 opponents, tight v4 averaged **23.5 points** versus **13.9** for the v3 control. The paired gain was **+9.6 points/table** (95% Student-t interval **+6.30 to +12.90**). Both fixed seed batches favored v4, with zero failed decisions in either field.
 
 Top-three finishes rose from 79 to 158 of 200, while outright wins fell from 33 to 25. This is evidence about one fixed local v3 field, not the tournament field. See the [paired report](benchmarks/tight-v4-vs-v3.md) and [aggregate JSON](benchmarks/tight-v4-vs-v3.json) for seeds, exact source hashes, finish counts, and uncertainty details.
 
 ## Recorded benchmark results (historical v1)
 
-These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current tight v4 source. See [v4 validation](validation/v4.md) for its correctness and runtime checks, [v3 validation](validation/v3.md) for the earlier action model, and [v2 validation](validation/v2.md) for exposed-card conditioning.
+These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current candidate or deployed tight v4 source. See [v4 validation](validation/v4.md) for its correctness and runtime checks, [v3 validation](validation/v3.md) for the earlier action model, and [v2 validation](validation/v2.md) for exposed-card conditioning.
 
 The initial batch ran 200 eight-player tables per scenario, with the same mixed-field seeds and seating used for the original-template comparison:
 
@@ -109,7 +111,7 @@ See [the aggregate report](benchmarks/public-summary.md) for confidence interval
 
 ## Research reviews
 
-The [preflop jam/fold review](docs/preflop-jamfold-review.md) records the inspected branch snapshot, model assumptions, missing policy exports, and checks needed before integrating that research. Tight v4 uses the reviewed three-card percentile ordering with an explicitly heuristic policy; the solver jam/call arrays remain unused.
+The [preflop jam/fold review](docs/preflop-jamfold-review.md) records the inspected branch snapshot, model assumptions, missing policy exports, and checks needed before integrating that research. Deployed tight v4 uses only the percentile ordering. This branch adds a strictly scoped mixed-policy adapter described above.
 
 ## Data handling
 
