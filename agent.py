@@ -6,6 +6,8 @@ value-heavy heuristic with a nonzero bluff likelihood, not a calibrated solver.
 All game-dependent work is local to a decision; no cross-table state is kept.
 """
 
+import json
+import os
 import random
 
 import eval7
@@ -20,6 +22,123 @@ _INDEX = {card: index for index, card in enumerate(_TEXT)}
 _EVALUATE = eval7.evaluate
 # Initialize the evaluator before the first timed decision.
 _EVALUATE(list(_DECK[:7]))
+
+# Preflop policy (research/analysis/export_policy.py): per-combo [percentile, bucket] of true 3-card
+# heads-up equity (0 = best) plus the full chip-EV jam/fold solver policy by bucket. Loaded once at import.
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "preflop_policy.json")) as _f:
+    _POLICY = json.load(_f)
+_COMBO, _JAM, _CALL = _POLICY["combo"], _POLICY["jam"], _POLICY["call"]
+_SOLVED_STACKS = (3, 5, 7, 10, 12, 15, 20)
+_SOLVED_SIZES = (2, 3, 4, 6, 8)
+_BEHIND_NAME = {1: "SB", 2: "BTN", 3: "CO", 4: "HJ", 5: "LJ", 6: "UTG+1", 7: "UTG"}
+# AZ-style first-in raise thresholds (share of 3-card hands, by position) for stacks above the jam/fold zone.
+_OPEN = {"SB": .70, "BTN": .65, "CO": .34, "HJ": .26}
+_OPEN_EARLY = .17
+# Facing one non-all-in raise: (re-raise below, call below) percentile thresholds by our position.
+_VS_RAISE = {"BB": (.08, .30), "SB": (.06, .20)}
+_VS_RAISE_OTHER = (.05, .10)
+JAM_ZONE_BB = 15
+
+
+def _nearest(value, options):
+    return min(options, key=lambda option: (abs(option - value), -option))
+
+
+def _preflop(state, hero):
+    """AZ-style preflop: jam/fold policy at <= 15 bb, fixed-size opens above, tight vs raises.
+
+    Returns an Action, or None to fall back to the equity logic for states this does not cover.
+    """
+    entry = _COMBO.get("".join(sorted(state.cards)))
+    if entry is None or len(state.cards) != 3:
+        return None
+    pct, bucket = entry
+    bb = max(1, state.blinds.big_blind)
+    raise_ = state.can("raise")
+    check = state.can("check")
+    call = state.can("call")
+    passive = Action.check() if check else Action.fold() if state.can("fold") else None
+    if passive is None:
+        return None
+
+    dealt = [s for s in state.seats if s.status != "busted"]
+    others = [s for s in state.seats if s.seat != state.seat and s.status in ("active", "all_in")]
+    acted = {e.seat for e in state.history if e.kind in ("fold", "check", "call", "raise") and e.seat != state.seat}
+    behind = [s for s in others if s.seat not in acted and s.status == "active"]
+    blinds = [e.seat for e in state.history if e.kind == "blind"]
+    raises = [e for e in state.history if e.kind == "raise"]
+    n = _nearest(len(dealt), _SOLVED_SIZES)
+    me_total = hero.stack + hero.bet
+
+    def jam():
+        return Action.raise_to(int(raise_.max_amount)) if raise_ else (Action.call() if call else passive)
+
+    def raise_to(total):
+        if not raise_:
+            return Action.call() if call else passive
+        total = int(min(raise_.max_amount, max(raise_.min_amount, total)))
+        return jam() if total - hero.bet >= .4 * me_total else Action.raise_to(total)
+
+    def my_name():
+        if len(blinds) >= 2 and state.seat == blinds[1]:
+            return "BB"
+        if blinds and state.seat == blinds[0]:
+            return "SB"
+        return _BEHIND_NAME.get(min(7, len(dealt) - 1 - len(acted)), "UTG")
+
+    if not raises:
+        if not behind:  # big blind with the option: raise the very top, else check
+            if pct < .15 and raise_:
+                limpers = sum(1 for e in state.history if e.kind == "call")
+                eff = min(me_total, max((s.stack + s.bet for s in others), default=0)) / bb
+                return jam() if eff <= JAM_ZONE_BB else raise_to(int((3 + limpers) * bb))
+            return passive
+        eff = min(me_total, max(s.stack + s.bet for s in behind)) / bb
+        pos = _BEHIND_NAME.get(min(len(behind), n - 1), "UTG")
+        if eff <= JAM_ZONE_BB:
+            policy = _JAM.get(str(n), {}).get(pos)
+            if policy is None:
+                return None
+            return jam() if policy[str(_nearest(eff, _SOLVED_STACKS))][bucket] >= .5 else passive
+        if pct < _OPEN.get(pos, _OPEN_EARLY):
+            limpers = sum(1 for e in state.history if e.kind == "call")
+            return raise_to(int(2.5 * bb + limpers * bb))
+        return passive
+
+    last = raises[-1]
+    raiser = next((s for s in state.seats if s.seat == last.seat), None)
+    cost = min(max(0, state.to_call), hero.stack)
+    big = cost >= .4 * me_total or (raiser is not None and raiser.status == "all_in")
+    eff = min(me_total, (raiser.stack + raiser.bet) if raiser else me_total) / bb
+    if len(raises) == 1 and big:
+        # Facing an open jam: the solver's call policy for (jammer position, our position, depth).
+        before = set()
+        for e in state.history:
+            if e is last:
+                break
+            if e.kind in ("fold", "check", "call", "raise"):
+                before.add(e.seat)
+        jpos = _BEHIND_NAME.get(min(n - 1, len(dealt) - 1 - len(before)), "UTG")
+        table = _CALL.get(str(n), {}).get(jpos, {}).get(str(_nearest(eff, _SOLVED_STACKS)), {})
+        policy = table.get(my_name())
+        if policy is not None and eff <= 20:
+            want = policy[bucket] >= .5
+        else:  # deeper or uncovered: AZ-like tight all-in calls, wider with a great price
+            price = cost / max(1, state.pot + cost)
+            want = pct < (.35 if price <= .3 else .10)
+        return (Action.call() if call else passive) if want else passive
+    if big:
+        return (Action.call() if call else passive) if pct < .04 else passive
+    if len(raises) >= 2:
+        if pct < .03:
+            return jam()
+        return Action.call() if call and pct < .06 else passive
+    three, flat = _VS_RAISE.get(my_name(), _VS_RAISE_OTHER)
+    if pct < three:
+        return jam() if eff <= 25 else raise_to(3 * last.amount)
+    if pct < flat and call:
+        return Action.call()
+    return passive
 
 
 def opponent_ranges(state, live):
@@ -230,13 +349,26 @@ def decide(state: GameState) -> Action:
         first = state.legal_actions[0]
         return Action(first.kind, first.min_amount)
 
+    if state.phase == "betting" and not state.board:
+        try:
+            hero = next(seat for seat in state.seats if seat.seat == state.seat)
+            chosen = _preflop(state, hero)
+        except Exception:  # any gap in the preflop tables falls back to the equity logic below
+            chosen = None
+        if chosen is not None:
+            return chosen
+
     values = equities(state.cards, state.board, len(live), state.variant.get("discarded", ()), tuple(tuple(s.shown_cards) for s in live), tuple(c for s in state.seats for c in s.shown_cards), opponent_ranges(state, live))
     if state.phase == "select":
         discard = choose_discard(state.cards, state.board, values)
         retained = [index for index in range(3) if index != discard]
-        # Revealing either retained card has identical showdown equity. Expose
-        # the lower rank as a simple information heuristic, not an EV claim.
-        reveal = min(retained, key=lambda index: _INDEX[state.cards[index]])
+        # Revealing either retained card has identical showdown equity. Like the top teams, expose the
+        # card that connects less with the board (pairs it / shares its suits less), then the lower rank.
+        board_ranks = [card[0] for card in state.board]
+        board_suits = [card[1] for card in state.board]
+        reveal = min(retained, key=lambda index: (state.cards[index][0] in board_ranks,
+                                                  board_suits.count(state.cards[index][1]),
+                                                  _INDEX[state.cards[index]]))
         return Action("select", cards=(discard, reveal))
 
     hero = next(seat for seat in state.seats if seat.seat == state.seat)
@@ -251,8 +383,8 @@ def decide(state: GameState) -> Action:
     raise_ = state.can("raise")
     callers = [seat for seat in live if seat.status == "active" and seat.stack > 0]
     if raise_ and callers:
-        # One half-pot value size, expressed as TOTAL street commitment.
-        target = hero.bet + cost + max(1, (state.pot + cost) // 2)
+        # One two-thirds-pot value size (AZ-style), expressed as TOTAL street commitment.
+        target = hero.bet + cost + max(1, 2 * (state.pot + cost) // 3)
         cover = max(seat.bet + seat.stack for seat in callers)
         target = int(min(raise_.max_amount, cover, max(raise_.min_amount, target)))
         if target >= raise_.min_amount:
