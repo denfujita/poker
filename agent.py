@@ -386,6 +386,52 @@ def _range_weight(hand, contexts):
     return weight
 
 
+def exact_river_groups(hole, community, fixed, deck, ranges, groups):
+    """Exact existing-model shares for two single-hidden-card river opponents.
+
+    Opponent likelihoods factor by hand. The only dependence is that their
+    hidden cards cannot coincide. Products of weight sums, minus same-card
+    collisions, integrate every ordered pair in linear rather than quadratic
+    work. All groups use this one joint posterior, including excluded players.
+    """
+    hero = _EVALUATE(community + hole)
+    records = []
+    buckets = []
+    for j in range(2):
+        values = []
+        sums = [0.0, 0.0, 0.0]  # Below hero, tied with hero, above hero.
+        contexts = ranges[j] if ranges else ()
+        for card in deck:
+            hand = fixed[j] + (card,)
+            score = _EVALUATE(community + hand)
+            category = 0 if score < hero else 1 if score == hero else 2
+            weight = _range_weight(hand, contexts) if contexts else 1.0
+            values.append((weight, category))
+            sums[category] += weight
+        records.append(values)
+        buckets.append(sums)
+    first, second = buckets
+    w0, w1 = sum(first), sum(second)
+    normalizer = w0 * w1
+    full = first[0] * second[0] + .5 * (first[1] * second[0] + first[0] * second[1])
+    full += first[1] * second[1] / 3.0
+    single0 = single1 = 0.0
+    for (a, ca), (b, cb) in zip(*records):
+        collision = a * b
+        normalizer -= collision
+        if ca < 2 and cb < 2:
+            full -= collision / (1 + (ca == 1) + (cb == 1))
+        if ca < 2:
+            single0 += a * (w1 - b) / (1 + (ca == 1))
+        if cb < 2:
+            single1 += b * (w0 - a) / (1 + (cb == 1))
+    if normalizer <= 0:
+        return None
+    values = {(): 1.0, (0,): single0 / normalizer, (1,): single1 / normalizer,
+              (0, 1): full / normalizer, (1, 0): full / normalizer}
+    return tuple((min(1.0, max(0.0, values[group])),) for group in groups)
+
+
 def equities(cards, board, opponents, discarded=(), exposed=(), dead_public=(), ranges=(),
              contender_groups=None):
     """Return showdown pot shares for each possible discard (or the sole pair).
@@ -406,6 +452,12 @@ to change our selection after seeing the flop. Ties split among all winners.
     blocked = set(hole + community + dead + tuple(_CARD[c] for c in dead_public))
     for known in fixed: blocked.update(known)
     deck = [card for card in _DECK if card not in blocked]
+    if (contender_groups is not None and len(hole) == 2 and len(community) == 5
+            and opponents == 2 and all(len(known) == 1 for known in fixed)
+            and any(len(group) < opponents for group in contender_groups)):
+        exact = exact_river_groups(hole, community, fixed, deck, ranges, contender_groups)
+        if exact is not None:
+            return exact
     # Per-state deterministic sampling: reproducible across processes and no
     # mutable global RNG, caches, or information carried between tables.
     seed = 2166136261

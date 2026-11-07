@@ -1,5 +1,7 @@
 # Side-pot payout correction (practice v5)
 
+This page records the v5 baseline. Current v6 retains its accounting correction and adds [exact evaluation for supported river cases](exact-river-side-pots.md).
+
 Source SHA-256: `b208a8970bfc314471e07efe1279815704749e2c4c2270b707be9b39b698d7de`. The required policy JSON remains `8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98`.
 
 The previous tight-v4 baseline applies one equity against all live opponents to the full eligible pot. With unequal all-in stacks, a player can lose the main pot and still win a profitable side pot. Practice v5 instead evaluates each pot against only the opponents eligible for it.
