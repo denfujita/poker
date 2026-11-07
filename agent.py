@@ -29,6 +29,16 @@ _EVALUATE(list(_DECK[:7]))
 with open(os.path.join(os.path.dirname(__file__), "preflop_policy.json")) as _policy_file:
     _PREFLOP_COMBOS = json.load(_policy_file)["combo"]
 
+# ---- Exploit knobs from scored rounds 2-3: our BB folds 67% to late opens and re-raises 2% (top teams
+# re-raise 29-46%, mostly all-in); we c-bet 63% (top 77-91%). RESHOVE_PCT = 0 and SMALL_CBET = False give v6.
+RESHOVE_PCT = .09         # SB/BB vs one unlimped CO/BTN/SB open: shove this top share of hands [0 = off]
+RESHOVE_MIN_BB = 12       # ...only when the raiser's effective stack is in this window (bb)
+RESHOVE_MAX_BB = 25
+SMALL_CBET = True         # heads-up flop, we made the last preflop raise, checked to: bet small [False]
+SMALL_CBET_FRAC = .33     # share of the pot
+SMALL_CBET_MARGIN = .02   # bet when (margin-adjusted) equity >= 1/2 - this
+
+
 def preflop_context(state):
     alive = sorted(s.seat for s in state.seats if s.status != "busted")
     if state.seat not in alive or len(alive) < 2:
@@ -145,6 +155,14 @@ def preflop_action(state, percentile, equity=None, call_pot=None):
             size = 2.2 if depth <= 35 else 2.5
             target = round((size + ctx["limpers"]) * bb)
         return _preflop_raise(state, target) or (None if cost else _preflop_passive(state))
+
+    # Blind re-shove vs a late steal (no limpers, one raise): fold equity, no postflop play.
+    if (RESHOVE_PCT and kind == "raised" and ctx["raise_count"] == 1 and ctx["limpers"] == 0
+            and pos in ("SB", "BB") and ctx["last_raiser_position"] in ("CO", "BTN", "SB")
+            and RESHOVE_MIN_BB <= ctx["facing_bb"] <= RESHOVE_MAX_BB and percentile <= RESHOVE_PCT):
+        shove = _preflop_raise(state, hero.stack + hero.bet)
+        if shove:
+            return shove
 
     # Raised/all-in pots: ordinal gate first, then actual equity and call price.
     facing = ctx["facing_bb"]
@@ -734,6 +752,19 @@ def decide(state: GameState) -> Action:
         if (value_equity > threshold
                 and raise_ev > max(0.0, passive_ev) + 0.05 * raise_cost):
             return Action.raise_to(target)
+
+    # Small heads-up c-bet: we made the last preflop raise and the flop is checked to us.
+    if SMALL_CBET and passive.kind == "check" and len(state.board) == 3 and len(live) == 1 and live[0].status == "active":
+        last_pre_raiser = None
+        for event in state.history:
+            if event.kind == "board":
+                break
+            if event.kind == "raise":
+                last_pre_raiser = event.seat
+        bet = state.can("raise")
+        if bet and last_pre_raiser == state.seat and equity >= .5 - SMALL_CBET_MARGIN:
+            size = hero.bet + max(1, int(SMALL_CBET_FRAC * state.pot))
+            return Action.raise_to(int(min(bet.max_amount, max(bet.min_amount, size))))
 
     if passive.kind == "fold" and not state.can("fold"):
         first = state.legal_actions[0]
