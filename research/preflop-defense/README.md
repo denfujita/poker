@@ -49,6 +49,10 @@ raise sizing and legality, exclusions, malformed memory, unchanged out-of-scope
 behavior, and the normal `Agent.act` entry point. Both source files pass the official
 static checker.
 
+These focused results were recorded by the variant author. Publication independently
+verified the frozen source hashes and diffs; its repeat run stopped at a local
+dependency-file I/O stall and is not counted as an additional passing check.
+
 Initial generic-field comparisons do not establish an improvement. Further matched
 Round-4-style proxy testing and runtime validation are separate pending gates.
 Do not treat focused correctness checks as a tournament-strength result.
