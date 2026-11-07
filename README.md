@@ -86,6 +86,10 @@ The paired mixed-field improvement was **14.25 points per table** (95% confidenc
 
 See [the aggregate report](benchmarks/public-summary.md) for confidence intervals, finishing positions, seeds, rules, hashes, and interpretation limits. [Machine-readable aggregate results](benchmarks/public-summary.json) are also included; raw tables and hand histories are not.
 
+## Research reviews
+
+The [preflop jam/fold review](docs/preflop-jamfold-review.md) records the inspected branch snapshot, model assumptions, missing policy exports, and checks needed before integrating that research. The current bot remains the validated v3 source described above.
+
 ## Data handling
 
 Only code, tests, and sanitized aggregate results belong in this repository. Keep credentials, API responses containing account details, private hand histories, raw per-table outputs, and local environment files untracked. The supplied `.gitignore` covers the usual generated locations.
