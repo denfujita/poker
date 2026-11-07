@@ -30,4 +30,12 @@ Run with the official kit environment and the frozen baseline's policy file besi
 python tools/check_jamfold_integration.py agent.py --baseline /path/to/tight-v4/agent.py
 ```
 
-Candidate source SHA-256: `118d248bd5629cd96a06b877a9e3d4deba0ee77bf9ca0c2129fa2564370bfba2`. Policy asset SHA-256: `8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98`. Main and the active tournament bot remain frozen tight v4 pending promotion review.
+## Real-engine award-event regression
+
+The initial adapter incorrectly rejected the engine's non-chip `prize_the_shover` event emitted immediately after an SB all-in and before the BB responds. That made the intended BB chart branch unreachable. The corrected filter accepts this bookkeeping event while preserving all betting and contribution checks. Synthetic call fixtures now include it: the new regression fails the old adapter at assertion 161 and passes the corrected adapter. `tools/check_jamfold_engine.py` additionally exercises actual engine SB jams, prize events, and subsequent BB `Agent.act` calls across all supported table sizes. Pre-fix HU performance results must remain labeled separately.
+
+A bounded possible extension to unequal true-HU stacks also had zero observed exact-depth coverage: none of 2,805 true-HU preflop states matched a supported effective depth. Therefore no unequal-stack or interpolation extension is included.
+
+The remote normal-engine regression reproduced the old source failure ("Non-chip award blocked the real BB chart decision") and passed all five corrected cases at 2/3/4/6/8 players. Each case recorded the award before the BB response, reached the chart through real `Agent.act`, matched the stored deterministic mixture, and returned a legal action. Corrected source SHA-256: `3ba1f4497a05448ffdc1119655045173f43fd372bd0848995bfc16140e9fa532`.
+
+This candidate retains its tight-v4 baseline and remains separate from the practice-v5 side-pot correction now on main. The restricted policy has not been deployed.

@@ -80,7 +80,7 @@ def supported_jamfold_spot(state):
             folded.add(event.seat)
         elif event.kind == "raise":
             raises.append(event)
-        elif event.kind != "hand":
+        elif event.kind not in ("hand", "prize_the_shover"):
             return None
     if posts != {sb: blinds.small_blind, bb: blinds.big_blind}:
         return None

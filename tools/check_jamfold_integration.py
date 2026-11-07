@@ -40,7 +40,8 @@ def state(players=2, depth=10, kind="jam", hand=1, cards=("As", "Kd", "Qh")):
     history = (Event("hand", amount=hand), Event("blind", sb, 10), Event("blind", bb, 20))
     history += tuple(Event("fold", i) for i in range(players) if i not in (sb, bb))
     if kind == "call":
-        history += (Event("raise", sb, total),)
+        # The real engine awards this non-chip prize before the BB responds.
+        history += (Event("raise", sb, total), Event("prize_the_shover", sb))
     legal = (LegalAction("fold"), LegalAction("call"))
     if kind == "jam":
         legal += (LegalAction("raise", 40, total),)

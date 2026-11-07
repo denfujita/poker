@@ -1,6 +1,6 @@
 # Restricted jam/fold candidate
 
-This branch contains an **experimental restricted jam/fold candidate**, SHA-256 `118d248bd5629cd96a06b877a9e3d4deba0ee77bf9ca0c2129fa2564370bfba2`. It has not replaced deployed tight v4 on main. Mapping and mixture checks passed; runtime and strength evaluation remain promotion requirements.
+This branch contains an **experimental restricted jam/fold candidate**, SHA-256 `3ba1f4497a05448ffdc1119655045173f43fd372bd0848995bfc16140e9fa532`. It has not been promoted. Main now contains the separate practice-v5 side-pot correction; this branch retains tight-v4 behavior outside its adapter. Mapping/mixture checks and the real-engine award-event regression passed; corrected-source runtime and strength evaluation remain promotion requirements.
 
 The adapter uses full bucket probabilities only in exact supported small-blind versus big-blind states. Other decisions retain tight-v4 behavior. See [supported domain and tests](docs/restricted-jamfold-adapter.md).
 
@@ -111,7 +111,7 @@ See [the aggregate report](benchmarks/public-summary.md) for confidence interval
 
 ## Research reviews
 
-The [preflop jam/fold review](docs/preflop-jamfold-review.md) records the inspected branch snapshot, model assumptions, missing policy exports, and checks needed before integrating that research. Deployed tight v4 uses only the percentile ordering. This branch adds a strictly scoped mixed-policy adapter described above.
+The [preflop jam/fold review](docs/preflop-jamfold-review.md) records the inspected branch snapshot, model assumptions, missing policy exports, and checks needed before integrating that research. The tight-v4 baseline uses only the percentile ordering. This branch adds a strictly scoped mixed-policy adapter described above.
 
 ## Data handling
 
