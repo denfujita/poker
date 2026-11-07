@@ -1,6 +1,6 @@
 """A tighter context-aware heuristic for the Bay Area discard-and-reveal variant.
 
-This is a chip-EV heuristic, not a GTO or ICM solver. Opponent exposed cards are fixed; unknown cards are sampled without replacement.
+Yifan v7 proposes actions; terminal heads-up calls additionally respect expected tournament points. This is not a solved strategy. Opponent exposed cards are fixed; unknown cards are sampled without replacement.
 Folded public cards and our discard are removed. Public actions and bet sizes weight opponent hand hypotheses. This is a
 value-heavy heuristic with a nonzero bluff likelihood, not a calibrated solver.
 All game-dependent work is local to a decision; no cross-table state is kept.
@@ -9,6 +9,8 @@ All game-dependent work is local to a decision; no cross-table state is kept.
 import json
 import os
 import random
+from bisect import bisect_left, bisect_right
+from point_value import prepare_point_value, prepare_settlement
 
 import eval7
 import poker_agent_sdk
@@ -578,6 +580,24 @@ to change our selection after seeing the flop. Ties split among all winners.
     blocked = set(hole + community + dead + tuple(_CARD[c] for c in dead_public))
     for known in fixed: blocked.update(known)
     deck = [card for card in _DECK if card not in blocked]
+    if len(hole) == 2 and len(community) == 5 and opponents == 1 and len(fixed[0]) == 1:
+        # With one exposed card, enumerate the remaining hidden card exactly.
+        # The likelihood model is unchanged; this removes 24-sample variance.
+        hero_score = _EVALUATE(community + hole)
+        total_weight = weighted_share = 0.0
+        for card in deck:
+            enemy = fixed[0] + (card,)
+            weight = _range_weight(enemy, ranges[0]) if ranges else 1.0
+            enemy_score = _EVALUATE(community + enemy)
+            total_weight += weight
+            if hero_score > enemy_score:
+                weighted_share += weight
+            elif hero_score == enemy_score:
+                weighted_share += .5 * weight
+        if total_weight > 0:
+            result = (weighted_share / total_weight,)
+            return (result if contender_groups is None else
+                    tuple(result if group else (1.0,) for group in contender_groups))
     if (contender_groups is not None and len(hole) == 2 and len(community) == 5
             and opponents == 2 and all(len(known) == 1 for known in fixed)
             and any(len(group) < opponents for group in contender_groups)):
@@ -770,7 +790,7 @@ def choose_discard(cards, board, values):
     return max(range(3), key=lambda index: (values[index], _EVALUATE(community + pairs[index])))
 
 
-def decide(state: GameState) -> Action:
+def decide_v7(state: GameState) -> Action:
     live = [seat for seat in state.seats if seat.seat != state.seat and seat.status in ("active", "all_in")]
     if state.phase not in ("select", "betting"):
         first = state.legal_actions[0]
@@ -881,6 +901,222 @@ def decide(state: GameState) -> Action:
         first = state.legal_actions[0]
         return Action(first.kind, first.min_amount)
     return passive
+
+
+def aggregate_orderings(hero, records):
+    """Exact masses of three-player weak orders, excluding shared hidden cards.
+
+    records[j][i] is opponent j's (score, weight) for the same deck card i.
+    Sorted prefix sums integrate opponent ordering in O(deck size * log size).
+    """
+    ordered = sorted(records[1])
+    scores = [score for score, _ in ordered]
+    prefix = [0.0]
+    for _, weight in ordered:
+        prefix.append(prefix[-1] + weight)
+    total = prefix[-1]
+    below_hero = prefix[bisect_left(scores, hero)]
+    through_hero = prefix[bisect_right(scores, hero)]
+    equal_hero = through_hero - below_hero
+    masses = {}
+    for first, weight in records[0]:
+        below = prefix[bisect_left(scores, first)]
+        through = prefix[bisect_right(scores, first)]
+        equal = through - below
+        if first < hero:
+            bins = (((2, 1, 0), below), ((2, 0, 0), equal),
+                    ((2, 0, 1), below_hero - through),
+                    ((1, 0, 1), equal_hero), ((1, 0, 2), total - through_hero))
+        elif first == hero:
+            bins = (((1, 1, 0), below_hero), ((0, 0, 0), equal_hero),
+                    ((0, 0, 2), total - through_hero))
+        else:
+            bins = (((1, 2, 0), below_hero), ((0, 2, 0), equal_hero),
+                    ((0, 2, 1), below - through_hero),
+                    ((0, 1, 1), equal), ((0, 1, 2), total - through))
+        for key, amount in bins:
+            masses[key] = masses.get(key, 0.0) + weight * amount
+    for (first, w0), (second, w1) in zip(*records):
+        key = (int(hero > first) + (hero > second),
+               int(first > hero) + (first > second),
+               int(second > hero) + (second > first))
+        masses[key] = masses.get(key, 0.0) - w0 * w1
+    # Impossible bins can retain tiny cancellation residue; weights are >= 0.
+    return {key: weight for key, weight in masses.items() if weight > 0.0}
+
+
+def showdown_worlds(cards, board, opponents, discarded=(), exposed=(),
+                    dead_public=(), ranges=(), exact=False):
+    """Joint outcomes, retaining who wins opponent-only side pots.
+
+    All fixed hero pairs share the same runouts and opponent hands. Evaluating
+    point value after settlement, before averaging, preserves bust risk.
+    """
+    hole = tuple(_CARD[c] for c in cards)
+    community = tuple(_CARD[c] for c in board)
+    hands = ((hole[1], hole[2]), (hole[0], hole[2]), (hole[0], hole[1])) if len(hole) == 3 else (hole,)
+    fixed = tuple(tuple(_CARD[c] for c in xs) for xs in exposed) if exposed else ((),) * opponents
+    blocked = set(hole + community + tuple(_CARD[c] for c in tuple(discarded) + tuple(dead_public)))
+    for known in fixed:
+        blocked.update(known)
+    deck = [card for card in _DECK if card not in blocked]
+    if exact and len(hole) == 2 and len(community) == 5 and opponents == 2 and all(len(k) == 1 for k in fixed):
+        # Compress the exact joint posterior into the possible weak orderings.
+        # Opponent-vs-opponent order matters even when hero loses or folds.
+        hero = _EVALUATE(community + hole)
+        records = []
+        for j, known in enumerate(fixed):
+            contexts = ranges[j] if ranges else ()
+            records.append(tuple((_EVALUATE(community + known + (card,)),
+                                  _range_weight(known + (card,), contexts) if contexts else 1.0)
+                                 for card in deck))
+        masses = aggregate_orderings(hero, records)
+        return tuple((weight, (scores[0],), scores[1:]) for scores, weight in masses.items())
+    if exact and len(hole) == 2 and len(community) == 5 and opponents == 1 and len(fixed[0]) == 1:
+        hero_score = _EVALUATE(community + hole)
+        context = ranges[0] if ranges else ()
+        return tuple(((_range_weight(fixed[0] + (card,), context) if context else 1.0),
+                      (hero_score,), (_EVALUATE(community + fixed[0] + (card,)),))
+                     for card in deck)
+    seed = 2166136261
+    for card in sorted(set(cards) | set(board) | set(discarded)):
+        seed = ((seed ^ (_INDEX[card] + 1)) * 16777619) & 0xFFFFFFFF
+    seed ^= opponents * 104729
+    sample = random.Random(seed).sample
+    missing = 5 - len(community)
+    draws = missing + sum(2 - len(k) for k in fixed)
+    result = []
+    for _ in range(24 if opponents <= 3 else 16):
+        picked = sample(deck, draws)
+        completed = community + tuple(picked[:missing])
+        scores = []
+        at = missing
+        weight = 1.0
+        for j, known in enumerate(fixed):
+            need = 2 - len(known)
+            enemy = known + tuple(picked[at:at + need])
+            at += need
+            scores.append(_EVALUATE(completed + enemy))
+            if ranges:
+                weight *= _range_weight(enemy, ranges[j])
+        result.append((weight, tuple(_EVALUATE(completed + hand) for hand in hands), tuple(scores)))
+    return tuple(result)
+
+
+def point_action_values(state, candidates, worlds=None):
+    """Expected points by action and fixed pair, using the actual payout ladder.
+
+    Opponents complete calls to the proposed street target, capped by their
+    stacks; subsequent streets check down. Raises receive no assumed fold
+    equity. This explicit continuation approximation is shared by all actions.
+    """
+    seats = sorted(state.seats, key=lambda s: s.seat)
+    n = len(seats)
+    if [s.seat for s in seats] != list(range(n)):
+        raise ValueError("expected a seat entry for each table position")
+    ledger = contributions(state)
+    committed = tuple(ledger[i] for i in range(n))
+    if sum(committed) != state.pot:
+        raise ValueError("hand commitments do not match the public pot")
+    free = tuple(s.stack for s in seats)
+    starts = tuple(free[i] + committed[i] for i in range(n))
+    alive = tuple(s.status != "busted" for s in seats)
+    eligible = tuple(s.status in ("active", "all_in") for s in seats)
+    hero = state.seat
+    live = [s for s in seats if s.seat != hero and eligible[s.seat]]
+    pairs = 3 if len(state.cards) == 3 else 1
+    score_points = prepare_point_value(state.config.payouts, hero, starts, alive)
+    if worlds is None:
+        worlds = showdown_worlds(
+            state.cards, state.board, len(live), tuple(state.variant.get("discarded", ())),
+            tuple(tuple(s.shown_cards) for s in live),
+            tuple(c for s in seats for c in s.shown_cards), opponent_ranges(state, live), exact=True)
+    scenarios = []
+    for action in candidates:
+        contenders = list(eligible)
+        additions = [0] * n
+        target = action.amount if action.kind == "raise" else max(s.bet for s in seats)
+        if action.kind == "fold":
+            contenders[hero] = False
+        elif action.kind == "call":
+            additions[hero] = min(state.to_call, free[hero])
+        elif action.kind == "raise":
+            additions[hero] = target - seats[hero].bet
+        if sum(contenders) > 1:
+            for opponent in live:
+                if opponent.status == "active":
+                    additions[opponent.seat] = min(opponent.stack, max(0, target - opponent.bet))
+        if any(add < 0 or add > free[i] for i, add in enumerate(additions)):
+            raise ValueError("projected commitment exceeds available stack")
+        remaining = tuple(free[i] - additions[i] for i in range(n))
+        invested = tuple(committed[i] + additions[i] for i in range(n))
+        base, pots = prepare_settlement(remaining, invested, tuple(contenders), state.button)
+        scenarios.append((base, pots, {}))
+    totals = [[0.0] * pairs for _ in candidates]
+    point_cache = {}
+    total_weight = 0.0
+    scores = [0] * n
+    for weight, hero_scores, enemy_scores in worlds:
+        if len(hero_scores) != pairs or len(enemy_scores) != len(live) or weight < 0:
+            raise ValueError("invalid joint showdown world")
+        total_weight += weight
+        for opponent, score in zip(live, enemy_scores):
+            scores[opponent.seat] = score
+        for pair, score in enumerate(hero_scores):
+            scores[hero] = score
+            for a, (base, pots, outcome_cache) in enumerate(scenarios):
+                winners = []
+                for _, group in pots:
+                    best = max(scores[i] for i in group)
+                    winners.append(tuple(i for i in group if scores[i] == best))
+                signature = tuple(winners)
+                value = outcome_cache.get(signature)
+                if value is None:
+                    terminal = list(base)
+                    for (amount, _), won in zip(pots, winners):
+                        share, remainder = divmod(amount, len(won))
+                        for seat in won:
+                            terminal[seat] += share
+                        if remainder:
+                            first = min(won, key=lambda seat: (seat - state.button - 1) % n)
+                            terminal[first] += remainder
+                    terminal = tuple(terminal)
+                    value = point_cache.get(terminal)
+                    if value is None:
+                        value = score_points(terminal)
+                        point_cache[terminal] = value
+                    outcome_cache[signature] = value
+                totals[a][pair] += weight * value
+    if total_weight <= 0:
+        raise ValueError("showdown worlds must have positive weight")
+    return tuple(tuple(value / total_weight for value in values) for values in totals)
+
+
+def terminal_point_call(state, proposal):
+    """Protect tournament equity on a terminal, heads-up-in-hand call.
+
+    The complete v7 policy proposes first, preserving its reshoves, c-bets,
+    selections and chart folds. Only an existing CALL can be vetoed. One of
+    the two contenders must be all-in after calling; folded survivors still
+    count in the actual payout calculation. No blanket tiny-stack threshold.
+    """
+    if proposal.kind != "call" or state.phase != "betting" or not state.can("fold"):
+        return proposal
+    if sum(s.status != "busted" for s in state.seats) < 3:
+        return proposal  # With two survivors, points are affine in chips.
+    hero = next(s for s in state.seats if s.seat == state.seat)
+    live = [s for s in state.seats if s.seat != state.seat and s.status in ("active", "all_in")]
+    cost = min(state.to_call, hero.stack)
+    if cost <= 0 or len(live) != 1 or (live[0].status != "all_in" and cost < hero.stack):
+        return proposal
+    fold_values, call_values = point_action_values(state, (Action.fold(), Action.call()))
+    if max(call_values) + 1e-10 < max(fold_values):
+        return Action.fold()
+    return proposal
+
+
+def decide(state: GameState) -> Action:
+    return terminal_point_call(state, decide_v7(state))
 
 
 class Agent(poker_agent_sdk.Agent):
