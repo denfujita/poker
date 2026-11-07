@@ -29,6 +29,19 @@ _EVALUATE(list(_DECK[:7]))
 with open(os.path.join(os.path.dirname(__file__), "preflop_policy.json")) as _policy_file:
     _PREFLOP_COMBOS = json.load(_policy_file)["combo"]
 
+# ---- Aggression knobs (round-2 leaks: BB folds 67%, re-raises 2%, folds 83% to 3-bets, c-bets 63%).
+# Bracketed values restore the previous behavior. Shove/jam thresholds are untouched.
+RERAISE_LIMIT_DEEP = .07        # re-raise range (percentile) facing a raise, >20 bb [.025]
+RERAISE_LIMIT_MID = .08         # same, 10-20 bb [.045]
+RERAISE_LIMIT_BLIND_VS_LATE = .12  # SB/BB vs a single CO/BTN/SB open [none]
+RERAISE_EQUITY_EDGE = .12       # equity over fair share needed to re-raise [.22]
+BB_DEFEND_LIMIT = .42           # BB continue range vs one raise [.34]
+BB_DEFEND_PREMIUM = .03         # base call premium in the BB vs one raise <= 3 bb [.06]
+VS_3BET_LIMIT = .08             # continue range for non-blinds after being re-raised [.04]
+CBET_EDGE = .04                 # flop equity edge to bet as the preflop raiser when checked to [.08]
+CBET_IGNORE_EV = True           # in a c-bet spot, skip the no-fold-equity EV check [False]
+
+
 def preflop_context(state):
     alive = sorted(s.seat for s in state.seats if s.status != "busted")
     if state.seat not in alive or len(alive) < 2:
@@ -98,7 +111,10 @@ def _preflop_raise(state, target):
 
 def preflop_reraise_allowed(context, percentile):
     depth = context["facing_bb"]
-    limit = .025 if depth > 20 else .045 if depth > 10 else .085
+    limit = RERAISE_LIMIT_DEEP if depth > 20 else RERAISE_LIMIT_MID if depth > 10 else .085
+    if (context["position"] in ("SB", "BB") and context["raise_count"] == 1
+            and context["last_raiser_position"] in ("CO", "BTN", "SB")):
+        limit = max(limit, RERAISE_LIMIT_BLIND_VS_LATE)
     if context["raise_count"] >= 2:
         limit *= .55
     return percentile <= limit
@@ -151,11 +167,11 @@ def preflop_action(state, percentile, equity=None, call_pot=None):
     if kind == "all_in":
         limit = .06 if facing > 20 else .14 if facing > 10 else .34 if facing > 5 else .50
     else:
-        limit = .34 if pos == "BB" else .18 if pos == "SB" else .12
+        limit = BB_DEFEND_LIMIT if pos == "BB" else .18 if pos == "SB" else .12
         if ctx["players"] == 2:
             limit = max(limit, .42)
         if ctx["raise_count"] >= 2:
-            limit = min(limit, .07 if pos in ("SB", "BB") else .04)
+            limit = min(limit, .07 if pos in ("SB", "BB") else VS_3BET_LIMIT)
         if cost > 8 * bb:
             limit = min(limit, .07)
     price = cost / max(1, state.pot + cost)
@@ -166,7 +182,8 @@ def preflop_action(state, percentile, equity=None, call_pot=None):
         return _preflop_passive(state)
     if equity is None or call_pot is None:
         return None
-    premium = .06 + min(.08, .04 * max(0, ctx["raise_count"] - 1))
+    base = BB_DEFEND_PREMIUM if pos == "BB" and ctx["raise_count"] == 1 and cost <= 3 * bb else .06
+    premium = base + min(.08, .04 * max(0, ctx["raise_count"] - 1))
     if cost >= .25 * max(1, hero.stack):
         premium += .04
     if kind == "all_in" or cost > 8 * bb:
@@ -180,7 +197,7 @@ def preflop_action(state, percentile, equity=None, call_pot=None):
         return _preflop_passive(state)
     if preflop_reraise_allowed(ctx, percentile):
         fair = 1.0 / (len(ctx["live"]) + 1)
-        if equity >= min(.85, fair + .22):
+        if equity >= min(.85, fair + RERAISE_EQUITY_EDGE):
             target = min(hero.stack + hero.bet, ctx["cover"]) if facing <= 15 else 3 * ctx["max_bet"]
             action = _preflop_raise(state, target)
             if action:
@@ -678,9 +695,17 @@ def decide(state: GameState) -> Action:
             contested = max(1, raise_pot - certain)
             value_equity = max(0.0, payout - certain) / contested
             fair_share = sum(amount / (len(group) + 1) for amount, group in raise_layers if group) / contested
-        threshold = fair_share + (0.14 if cost else 0.08)
-        if (value_equity > threshold
-                and raise_ev > max(0.0, passive_ev) + 0.05 * raise_cost):
+        # C-bet: we made the last preflop raise and the flop is checked to us.
+        last_pre_raiser = None
+        for event in state.history:
+            if event.kind == "board":
+                break
+            if event.kind == "raise":
+                last_pre_raiser = event.seat
+        cbet_spot = not cost and len(state.board) == 3 and last_pre_raiser == state.seat
+        threshold = fair_share + (0.14 if cost else CBET_EDGE if cbet_spot else 0.08)
+        # The EV check assumes no folds; in a c-bet spot the equity edge alone decides.
+        if value_equity > threshold and ((cbet_spot and CBET_IGNORE_EV) or raise_ev > max(0.0, passive_ev) + 0.05 * raise_cost):
             return Action.raise_to(target)
 
     if passive.kind == "fold" and not state.can("fold"):
