@@ -1,6 +1,6 @@
 # Practice v5: side-pot-aware poker bot
 
-The current **practice v5** source is SHA-256 `b208a8970bfc314471e07efe1279815704749e2c4c2270b707be9b39b698d7de`. It is the uploaded practice bot and includes the side-pot payout correction. Focused correctness checks passed; the required 200-table reference match and paired strength evaluation are still pending.
+The current **practice v5** source is SHA-256 `b208a8970bfc314471e07efe1279815704749e2c4c2270b707be9b39b698d7de`. It is the uploaded practice bot and includes the side-pot payout correction. Focused correctness checks, the required 200-table reference match, and a 200-pair controlled comparison completed with zero failed decisions in the match runs. The paired comparison provides only limited evidence of stronger play; see the version-specific report below.
 
 Known limitation: the small Monte Carlo sample can produce noisy river side-pot estimates. An exact river follow-up is being developed separately; this source still uses sampled equity.
 
@@ -89,6 +89,12 @@ Both files must remain together for local tests and production. The JSON asset's
 Use the same seed and opponent ordering to compare versions, then calculate uncertainty from paired per-table differences. Use a new seed block for additional independent evidence. The runner records actual ICM-aware table points, finishing ranks, decisions, failures, hand-cap frequency, and uncertainty intervals. A rank at the hand cap is not necessarily an outright win; top-three rank is not necessarily a cash rate.
 
 Default bots are intentionally weak. Scores against them are diagnostic benchmarks, not a forecast of performance against the tournament field.
+
+## Practice v5 paired comparison
+
+Across **200 matched pairs** against seven copies of tight v4, practice v5 averaged **14.60 points** versus **14.15** for the control. Only **four paired scores changed** (+20, +20, +20, +30); the mean difference of **+0.45** is limited evidence in this fixed field. The exact two-sided sign-flip test gives p = 0.125, so this does not establish a robust improvement.
+
+The required 200-table reference match averaged **42.60 points**, with zero failed decisions across all bots. Normal eight-player matches also had zero failures. Additional ten-player stress timing had three calls over 1 ms in 960 measurements, so a universal sub-millisecond claim is not supported. See the [v5 aggregate report](benchmarks/sidepot-v5-vs-v4.md) and [JSON](benchmarks/sidepot-v5-vs-v4.json) for exact versions, settings, intervals, and runtime limits.
 
 ## Baseline tight v4 paired comparison
 

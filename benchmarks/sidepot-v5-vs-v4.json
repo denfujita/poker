@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "title": "Side-pot v5 versus v4: controlled benchmark",
+  "date": "2026-11-06",
+  "source_hashes": {
+    "sidepot_v5_agent_sha256": "b208a8970bfc314471e07efe1279815704749e2c4c2270b707be9b39b698d7de",
+    "v4_agent_sha256": "47f1af369299958021af7a76b05940b5cbfbf935e9c1ebae7e823dc3f4cb8a33",
+    "unchanged_preflop_policy_sha256": "8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98"
+  },
+  "paired_comparison": {
+    "field": "One evaluated bot versus seven copies of v4; the control uses v4 in the evaluated seat.",
+    "tables_per_version": 200,
+    "seed_batches": [
+      {
+        "seed": "mixed-jam-v5-strong-a",
+        "tables": 100
+      },
+      {
+        "seed": "mixed-jam-v5-strong-b",
+        "tables": 100
+      }
+    ],
+    "matched_initial_seating_and_deal_seeds_verified": true,
+    "authoritative_points_and_stacks_verified": true,
+    "settings": {
+      "variant": "flop_discard_reveal",
+      "players": 8,
+      "starting_stack": 2000,
+      "blinds": [
+        {
+          "small_blind": 10,
+          "big_blind": 20,
+          "ante": 0
+        },
+        {
+          "small_blind": 20,
+          "big_blind": 40,
+          "ante": 0
+        },
+        {
+          "small_blind": 30,
+          "big_blind": 60,
+          "ante": 0
+        },
+        {
+          "small_blind": 50,
+          "big_blind": 100,
+          "ante": 0
+        },
+        {
+          "small_blind": 80,
+          "big_blind": 160,
+          "ante": 0
+        },
+        {
+          "small_blind": 125,
+          "big_blind": 250,
+          "ante": 0
+        },
+        {
+          "small_blind": 200,
+          "big_blind": 400,
+          "ante": 0
+        },
+        {
+          "small_blind": 300,
+          "big_blind": 600,
+          "ante": 0
+        },
+        {
+          "small_blind": 500,
+          "big_blind": 1000,
+          "ante": 0
+        },
+        {
+          "small_blind": 800,
+          "big_blind": 1600,
+          "ante": 0
+        },
+        {
+          "small_blind": 1200,
+          "big_blind": 2400,
+          "ante": 0
+        },
+        {
+          "small_blind": 2000,
+          "big_blind": 4000,
+          "ante": 0
+        }
+      ],
+      "hands_per_level": 20,
+      "hand_cap": 250,
+      "decision_ms": 1,
+      "time_bank_ms": 100,
+      "memory_bytes": 65536,
+      "resampling_continuations": 1,
+      "icm_luck_correction": false,
+      "payouts": [
+        50,
+        30,
+        20
+      ],
+      "concurrency": 2
+    },
+    "sidepot_v5": {
+      "mean_points": 14.6,
+      "finishing_positions": {
+        "1": 25,
+        "2": 37,
+        "3": 28,
+        "4": 19,
+        "5": 24,
+        "6": 20,
+        "7": 20,
+        "8": 27
+      },
+      "first_place_count": 25,
+      "first_place_rate": 0.125,
+      "top_three_count": 90,
+      "top_three_rate": 0.45,
+      "outright_win_count": 25,
+      "failed_decisions": 0,
+      "decisions": 29084,
+      "all_bot_failed_decisions": 0,
+      "all_bot_decisions": 222156,
+      "hand_cap_stops": 0,
+      "average_hands": 144.165
+    },
+    "v4_control": {
+      "mean_points": 14.15,
+      "finishing_positions": {
+        "1": 23,
+        "2": 38,
+        "3": 27,
+        "4": 21,
+        "5": 24,
+        "6": 20,
+        "7": 20,
+        "8": 27
+      },
+      "first_place_count": 23,
+      "first_place_rate": 0.115,
+      "top_three_count": 88,
+      "top_three_rate": 0.44,
+      "outright_win_count": 23,
+      "failed_decisions": 0,
+      "decisions": 29057,
+      "all_bot_failed_decisions": 0,
+      "all_bot_decisions": 222328,
+      "hand_cap_stops": 0,
+      "average_hands": 144.375
+    },
+    "paired_mean_points_delta": 0.45,
+    "changed_table_count": 4,
+    "paired_delta_frequency": {
+      "0": 196,
+      "20": 3,
+      "30": 1
+    },
+    "paired_t_ci95": [
+      0.0014233097161142072,
+      0.8985766902838859
+    ],
+    "stratified_paired_bootstrap_ci95": [
+      0.1,
+      0.95
+    ],
+    "bootstrap_method": "Independent analysis resampled paired table differences within each of the two 100-table seed batches.",
+    "exact_two_sided_sign_flip_p_value": 0.125,
+    "by_seed": [
+      {
+        "seed": "mixed-jam-v5-strong-a",
+        "candidate_mean": 13.7,
+        "baseline_mean": 13.5,
+        "paired_mean_delta": 0.2,
+        "ci95_t": [
+          -0.19684339,
+          0.5968433900000001
+        ],
+        "changed_table_points": 1
+      },
+      {
+        "seed": "mixed-jam-v5-strong-b",
+        "candidate_mean": 15.5,
+        "baseline_mean": 14.8,
+        "paired_mean_delta": 0.7,
+        "ci95_t": [
+          -0.11029861122558571,
+          1.5102986112255856
+        ],
+        "changed_table_points": 3
+      }
+    ],
+    "interpretation": "Limited evidence of a small positive difference in this fixed field. Only four paired scores changed. The borderline t interval and positive bootstrap interval do not establish a robust improvement; the exact two-sided sign-flip p-value is 0.125."
+  },
+  "required_reference_match": {
+    "seed": "sidepot-v5-reference",
+    "tables": 200,
+    "players": 3,
+    "settings_note": "Same variant and default table settings, with three players.",
+    "bots": {
+      "sidepot_v5": {
+        "average_points": 42.6,
+        "places": {
+          "1": 146,
+          "2": 14,
+          "3": 40
+        },
+        "failed_decisions": 0
+      },
+      "check_or_fold": {
+        "average_points": 28.85,
+        "places": {
+          "2": 177,
+          "3": 23
+        },
+        "failed_decisions": 0
+      },
+      "min_raiser": {
+        "average_points": 28.55,
+        "places": {
+          "1": 54,
+          "2": 9,
+          "3": 137
+        },
+        "failed_decisions": 0
+      }
+    }
+  },
+  "validation": {
+    "bundle_sha256": "49b48937a5af212ce6108cd55489a282a505878b42c393c7f1c639f00c9facee",
+    "submission_checker_passed": true,
+    "legality_checks": 342,
+    "malformed_memory_checks": 90,
+    "sidepot_regression_checks": 21,
+    "no_time_bank_probe": {
+      "tables": 10,
+      "hand_cap": 20,
+      "decision_ms": 1,
+      "time_bank_ms": 0,
+      "totals": {
+        "candidate": {
+          "decisions": 100,
+          "failed_decisions": 0,
+          "failure_rate": 0.0
+        },
+        "opponent": {
+          "decisions": 180,
+          "failed_decisions": 0,
+          "failure_rate": 0.0
+        }
+      }
+    },
+    "runtime": {
+      "scope": "act only; excludes serialization, IPC, host delivery, and queueing",
+      "normal_engine_state_measurements": {
+        "n": 3420,
+        "p50_us": 194.275,
+        "p99_us": 671.14,
+        "max_us": 747.573,
+        "over_1ms": 0
+      },
+      "unequal_all_in_selection_stress": [
+        {
+          "candidate": {
+            "8": {
+              "n": 480,
+              "p50_us": 379.605,
+              "p99_us": 425.995,
+              "max_us": 445.212,
+              "over_1ms": 0
+            },
+            "10": {
+              "n": 480,
+              "p50_us": 456.374,
+              "p99_us": 507.642,
+              "max_us": 2834.903,
+              "over_1ms": 2
+            }
+          },
+          "baseline": {
+            "8": {
+              "n": 480,
+              "p50_us": 258.00149999999996,
+              "p99_us": 290.974,
+              "max_us": 303.763,
+              "over_1ms": 0
+            },
+            "10": {
+              "n": 480,
+              "p50_us": 306.6555,
+              "p99_us": 345.795,
+              "max_us": 391.469,
+              "over_1ms": 0
+            }
+          }
+        },
+        {
+          "candidate": {
+            "8": {
+              "n": 480,
+              "p50_us": 377.4875,
+              "p99_us": 429.726,
+              "max_us": 446.568,
+              "over_1ms": 0
+            },
+            "10": {
+              "n": 480,
+              "p50_us": 455.1055,
+              "p99_us": 512.544,
+              "max_us": 2127.536,
+              "over_1ms": 1
+            }
+          },
+          "baseline": {
+            "8": {
+              "n": 480,
+              "p50_us": 257.299,
+              "p99_us": 294.759,
+              "max_us": 336.155,
+              "over_1ms": 0
+            },
+            "10": {
+              "n": 480,
+              "p50_us": 305.909,
+              "p99_us": 344.971,
+              "max_us": 356.493,
+              "over_1ms": 0
+            }
+          }
+        }
+      ],
+      "interpretation": "Eight-player stress stayed below 1 ms. Extra ten-player stress had rare 2.1\u20132.8 ms outliers; do not claim every decision meets 1 ms."
+    }
+  },
+  "limitations": [
+    "All performance results are controlled offline comparisons, not tournament-field results or a deployment claim.",
+    "The comparison field contains seven copies of one v4 policy; it does not represent the unknown tournament population.",
+    "Only four of 200 paired table scores changed. More independent evidence is needed before claiming stronger play.",
+    "Uncertainty estimates use tables as the sampling unit and are unadjusted for multiple comparisons or model selection.",
+    "The paired bootstrap conditions on the observed sparse changes; its positive lower bound is not a substitute for additional changed outcomes.",
+    "Correct side-pot accounting and passing controlled regressions do not establish exact equity estimation for every side-pot state.",
+    "Timing is act-only. Ten-player stress includes rare values above 1 ms despite zero failures in the normal match runs."
+  ],
+  "privacy": "Sanitized aggregate results only. No raw table records, private histories, account metadata, or filesystem paths are included."
+}
