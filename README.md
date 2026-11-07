@@ -1,8 +1,8 @@
-# V6: exact river side-pot evaluation
+# Exact heads-up river candidate
 
-The active **v6** source is SHA-256 `2fe4de9a0d6f35fc5c3bb0aaccf47699e81e0eef2346662ac825d2f67e0f19d5`. It adds exact weighted river side-pot evaluation to practice v5. The required 200-table reference match averaged **43.35 points** with zero failed decisions; mathematical, legality, malformed-memory, and zero-bank checks passed. The uploaded bundle reached ready/active status. See [v6 validation](validation/v6.md) for timing limits and evidence scope.
+This branch contains an experimental heads-up river follow-up, SHA-256 `38ed571635c946ccd65ece23893f37b6a27cd72fb82e1d8a36805ac06dc96112`. Main and the uploaded bot remain v6 (`2fe4de9a…`). The change enumerates the one unknown opponent card on supported heads-up river states using the existing weights and blockers. Other strategy and sampling domains are unchanged. Public synthetic tests and independent oracle checks passed; remote validation and deployment remain pending. See [scope and verification](docs/exact-heads-up-river.md).
 
-For river side pots with exactly two opponents and one exposed/one hidden card each, the bot integrates the existing joint weighted model over all legal hidden-card pairs in O(deck size). Other states retain the sampled path. See [scope and tests](docs/exact-river-side-pots.md).
+The v6 exact calculation is retained for river side pots with exactly two opponents and one exposed/one hidden card each. It integrates the existing joint weighted model over all legal hidden-card pairs in O(deck size). States outside either exact calculation retain the sampled path. See [scope and tests](docs/exact-river-side-pots.md).
 
 The correction estimates each pot against its eligible opponents, preserving folded contributions and unmatched returns. See [the correction and regression case](docs/side-pot-payout.md).
 
@@ -14,7 +14,7 @@ The correction estimates each pot against its eligible opponents, preserving fol
 - Handle heads-up positions, busted-seat gaps, limpers, current blinds, short stacks, and all-in prices explicitly. Keep inexpensive short-stack continuations available.
 - Compare all three retained pairs after the flop using shared simulated runouts. Break exact equity ties by current made-hand strength; a strictly higher-equity draw stays primary. Expose the retained card less connected to the board, as an information heuristic.
 - Build separate pot layers for capped all-in opponents. Estimate each layer from the same sampled worlds, use one retained pair across all layers, and recompute projected raise payouts.
-- Integrate supported two-opponent river side pots exactly; otherwise sample 16–24 possible showdowns. Fix each live opponent's exposed card in its hand and remove every known public card, including folded players' exposed cards, plus the bot's own discard from the remaining deck.
+- Integrate supported heads-up river hands and two-opponent river side pots exactly; otherwise sample 16–24 possible showdowns. Fix each live opponent's exposed card in its hand and remove every known public card, including folded players' exposed cards, plus the bot's own discard from the remaining deck.
 - Weight opponent hands using public calls/raises and historical bet sizes. Add caution under large bets, reraises, and repeated barrels; apply a separate gate to weak reraises. Value-raise sizing uses 62% of the pot after calling, subject to legal and stack limits.
 
 The percentile ordering comes from the reviewed teammate asset; **its full jam/call bucket arrays are bundled but unused**. Opening and defense thresholds are heuristics, not the solver's policy, GTO, or ICM. Action likelihoods are also uncalibrated, and the small sample budget can give noisy estimates. The raise model assumes opponents continue and assigns no fold equity. There is no learning across tables.
@@ -53,6 +53,7 @@ On macOS, the kit's LightGBM/XGBoost dependencies may also require the OpenMP ru
 "$POKER_PY" tools/check_integrated_preflop.py agent.py
 "$POKER_PY" tools/check_side_pots.py agent.py
 "$POKER_PY" tools/check_exact_river.py agent.py
+"$POKER_PY" tools/check_heads_up_river.py agent.py
 "$POKER_PY" tools/no_bank_check.py . "$POKER_KIT/examples/check_or_fold" \
   --tables 10 --hand-cap 20 --report reports/no-bank.json
 "$POKER_KIT/.venv/bin/poker-agent" play . \
@@ -69,8 +70,8 @@ Stage only the two runtime files, then run the kit packer and checker:
 ```sh
 mkdir -p .local/bot reports
 cp agent.py preflop_policy.json .local/bot/
-"$POKER_KIT/.venv/bin/poker-agent" pack .local/bot reports/exact-river-v6.zip
-"$POKER_KIT/.venv/bin/poker-agent" check reports/exact-river-v6.zip
+"$POKER_KIT/.venv/bin/poker-agent" pack .local/bot reports/exact-hu-river-candidate.zip
+"$POKER_KIT/.venv/bin/poker-agent" check reports/exact-hu-river-candidate.zip
 ```
 
 Both files must remain together for local tests and production. The JSON asset's SHA-256 is `8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98`.
@@ -91,9 +92,9 @@ Use the same seed and opponent ordering to compare versions, then calculate unce
 
 Default bots are intentionally weak. Scores against them are diagnostic benchmarks, not a forecast of performance against the tournament field.
 
-## V6 paired comparison
+## Historical v6 paired comparison
 
-Across **200 matched pairs** against a fixed field of seven tight-v4 bots, v6 averaged **14.70 points** versus **14.60** for sampled-side-pot v5. Only **one score changed** (+20); the paired mean difference was **+0.10 points/table**, with a 95% t interval of **−0.097 to +0.297**. This comparison does not establish stronger play. Both versions had zero failed decisions in the benchmark.
+These results apply to v6, not this candidate. Across **200 matched pairs** against a fixed field of seven tight-v4 bots, v6 averaged **14.70 points** versus **14.60** for sampled-side-pot v5. Only **one score changed** (+20); the paired mean difference was **+0.10 points/table**, with a 95% t interval of **−0.097 to +0.297**. This comparison does not establish stronger play. Both versions had zero failed decisions in the benchmark.
 
 See the [v6 validation and aggregate report](benchmarks/exact-river-v6-validation.md) and [JSON](benchmarks/exact-river-v6-validation.json) for exact source hashes, matched seeds, settings, failures, and timing limitations. The reference-bot match and mathematical regressions establish specific checks, not tournament-field performance.
 

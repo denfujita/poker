@@ -452,6 +452,24 @@ to change our selection after seeing the flop. Ties split among all winners.
     blocked = set(hole + community + dead + tuple(_CARD[c] for c in dead_public))
     for known in fixed: blocked.update(known)
     deck = [card for card in _DECK if card not in blocked]
+    if len(hole) == 2 and len(community) == 5 and opponents == 1 and len(fixed[0]) == 1:
+        # With one exposed card, enumerate the remaining hidden card exactly.
+        # The likelihood model is unchanged; this removes 24-sample variance.
+        hero_score = _EVALUATE(community + hole)
+        total_weight = weighted_share = 0.0
+        for card in deck:
+            enemy = fixed[0] + (card,)
+            weight = _range_weight(enemy, ranges[0]) if ranges else 1.0
+            enemy_score = _EVALUATE(community + enemy)
+            total_weight += weight
+            if hero_score > enemy_score:
+                weighted_share += weight
+            elif hero_score == enemy_score:
+                weighted_share += .5 * weight
+        if total_weight > 0:
+            result = (weighted_share / total_weight,)
+            return (result if contender_groups is None else
+                    tuple(result if group else (1.0,) for group in contender_groups))
     if (contender_groups is not None and len(hole) == 2 and len(community) == 5
             and opponents == 2 and all(len(known) == 1 for known in fixed)
             and any(len(group) < opponents for group in contender_groups)):
