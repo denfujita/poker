@@ -1,6 +1,31 @@
-# V6: exact river side-pot evaluation
+# Experimental preflop defense: candidate A
 
-The active **v6** source is SHA-256 `2fe4de9a0d6f35fc5c3bb0aaccf47699e81e0eef2346662ac825d2f67e0f19d5`. It adds exact weighted river side-pot evaluation to practice v5. The required 200-table reference match averaged **43.35 points** with zero failed decisions; mathematical, legality, malformed-memory, and zero-bank checks passed. The uploaded bundle reached ready/active status. See [v6 validation](validation/v6.md) for timing limits and evidence scope.
+This branch tests a narrow change against the frozen active **v8** baseline at commit
+`513de720a415e50cd86a13403e5fb6ed11401905`. It is an experiment, **not an active
+submission or an established improvement**. Simulation results are pending.
+
+After our 2–3 BB open faces one affordable 3-bet with everyone else folded, the
+candidate lets the top 8% of nonblind hands reach the existing equity and call-price
+test instead of stopping at 4%. It only applies at eight-player tables, with at least
+50 BB effective against the raiser, no ante or calls, a raise total at most 12 BB,
+and a call price at most 8 BB. It does not force calls, introduce 4-bets, or change
+all-in responses. Every other v8 policy and its terminal point-value veto remain.
+
+Focused verification passed **264 assertions across 168 real-engine states**, with
+seven fold-to-call changes through `Agent.act`. The tests cover excluded situations,
+legal actions, malformed memory, and chip-neutral prize events. They do not establish
+empirical strategy strength. See [candidate scope and reproduction](docs/preflop-defense-a.md).
+
+The runtime bundle requires **`agent.py`, `point_value.py`, and `preflop_policy.json`**
+together. Candidate source SHA-256:
+`a5f142c613f82d6e7aca11b52aa1e7e0bcbfb3b7c4a5f0914383f74b68c21cc0`.
+
+## Historical v6 documentation
+
+The sections below describe historical baselines. Their two-file packaging commands
+do not apply to the three-file candidate above.
+
+The historical **v6** source is SHA-256 `2fe4de9a0d6f35fc5c3bb0aaccf47699e81e0eef2346662ac825d2f67e0f19d5`. It adds exact weighted river side-pot evaluation to practice v5. The required 200-table reference match averaged **43.35 points** with zero failed decisions; mathematical, legality, malformed-memory, and zero-bank checks passed. The uploaded bundle reached ready/active status at that time. See [v6 validation](validation/v6.md) for timing limits and evidence scope.
 
 For river side pots with exactly two opponents and one exposed/one hidden card each, the bot integrates the existing joint weighted model over all legal hidden-card pairs in O(deck size). Other states retain the sampled path. See [scope and tests](docs/exact-river-side-pots.md).
 

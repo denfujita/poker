@@ -224,6 +224,28 @@ def preflop_reraise_allowed(context, percentile):
     return percentile <= limit
 
 
+def affordable_heads_up_threebet(state, context):
+    """Our small open meets one affordable 3-bet after everyone else folds.
+
+    This only widens eligibility for the existing call-price/equity test.
+    It does not force a call, create a 4-bet, or change all-in decisions.
+    """
+    if (context["players"] != 8 or context["pot_class"] != "raised"
+            or context["raise_count"] != 2 or context["facing_bb"] < 50
+            or context["limpers"] or len(context["live"]) != 1
+            or context["live"][0].status != "active" or state.blinds.ante):
+        return False
+    if any(event.kind == "call" for event in state.history):
+        return False
+    raises = [event for event in state.history if event.kind == "raise"]
+    first, second = raises
+    hero, bb = context["hero"], context["bb"]
+    return (first.seat == state.seat and second.seat == context["live"][0].seat
+            and 2 * bb <= first.amount <= 3 * bb and hero.bet == first.amount
+            and second.amount <= 12 * bb and 0 < state.to_call <= 8 * bb
+            and state.to_call < hero.stack and state.can("call") is not None)
+
+
 def preflop_action(state, percentile, equity=None, call_pot=None):
     """Complete policy with weighted equity+eligible call pot; else gated fallback.
 
@@ -284,6 +306,8 @@ def preflop_action(state, percentile, equity=None, call_pot=None):
             limit = max(limit, .42)
         if ctx["raise_count"] >= 2:
             limit = min(limit, .07 if pos in ("SB", "BB") else .04)
+            if pos not in ("SB", "BB") and affordable_heads_up_threebet(state, ctx):
+                limit = .08
         if cost > 8 * bb:
             limit = min(limit, .07)
     price = cost / max(1, state.pot + cost)
