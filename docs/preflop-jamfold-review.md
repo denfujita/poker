@@ -2,7 +2,7 @@
 
 Reviewed snapshot: [`yifan/preflop-jamfold` at `54edbc7`](https://github.com/denfujita/poker/tree/54edbc770c1056882419597f879d515b3056795c). Its preflop code and exports are unchanged from `8b3aead`; the later commit adds separate postflop likelihood research.
 
-The branch's root `agent.py` is byte-identical to v2 and does not load the preflop tables. Main retains validated v3, SHA-256 `2a831f886d03232967bc826ee25a6ad013797c9810308e970ace229601f650cd`. There is no integrated preflop-table candidate at the branch root to deploy or compare directly.
+The branch's root `agent.py` is byte-identical to v2 and does not load the preflop tables. At that review point main retained validated v3, SHA-256 `2a831f886d03232967bc826ee25a6ad013797c9810308e970ace229601f650cd`. There is no integrated preflop-table candidate at the branch root to deploy or compare directly.
 
 ## Model limits
 
@@ -24,6 +24,10 @@ An aggregate 40% jam share does not imply “jam the best 40% by heads-up equity
 
 ## Recommendation
 
-Keep v3 while preparing a separate candidate that preserves its exposed-card conditioning, action-aware postflop behavior, and discard correction. Export a faithful bucket policy or explicitly define the replacement heuristic, specify unsupported-state fallbacks, then run legality/runtime checks and paired benchmarks against v3 using matched seeds, seating, and opponent fields.
+The review recommended keeping v3 while preparing a separate candidate that preserves its exposed-card conditioning, action-aware postflop behavior, and discard correction. Export a faithful bucket policy or explicitly define the replacement heuristic, specify unsupported-state fallbacks, then run legality/runtime checks and paired benchmarks against v3 using matched seeds, seating, and opponent fields.
 
 The added postflop likelihood data are exploratory showdown-only observations, with missing uncontested bluffs and a rank-percentile prior that is not generally uniform. They are not yet a calibrated action-likelihood model or a validated bot improvement. This review does not integrate those data or tournament result files.
+
+## Subsequent selective integration
+
+Tight v4 incorporates only the three-card percentile ordering from the later `03d8236` asset. Its position/stack-dependent opening and defense rules are explicitly new heuristics, and the bundled solver jam/call arrays remain unused. It preserves v3's exposure conditioning, action weighting, and discard correction. See [v4 validation](../validation/v4.md) for the checks on the integrated source.

@@ -1,17 +1,18 @@
-# Action-aware equity poker bot
+# Tight context-aware poker bot
 
-A small Monte Carlo equity and pot-odds strategy for the NO LIMIT Bay Area flop-discard-and-reveal variant. The current source is v3 (SHA-256 `2a831f886d03232967bc826ee25a6ad013797c9810308e970ace229601f650cd`). The submitted bot is the single file `agent.py`; the `tools/` scripts are local development utilities and must not be included in a bot upload.
+A chip-EV strategy for the NO LIMIT Bay Area flop-discard-and-reveal variant. The current source is **tight v4**, SHA-256 `47f1af369299958021af7a76b05940b5cbfbf935e9c1ebae7e823dc3f4cb8a33`.
+
+**Upload a ZIP containing both `agent.py` and `preflop_policy.json` at its root.** The bot loads the JSON at import time; uploading `agent.py` alone will fail. The `tools/` scripts are development utilities, not submission files.
 
 ## Strategy
 
-- Start with three private cards. After the flop, compare all three possible retained pairs using shared simulated runouts and keep the pair with the highest average equity. When sampled equities tie exactly, retain the strongest current made hand; a strictly better draw equity remains primary.
-- Expose the lower-ranked retained card as a simple information heuristic.
-- Sample 16–24 possible showdowns against the active/all-in opponents, splitting tied pots correctly. Fix each live opponent’s exposed card in their simulated hand, and exclude all public cards and the bot’s own cards/discard from the remaining deck, including exposed cards belonging to folded opponents.
-- Use estimated chip EV for calls, free checks, and one legal half-pot value-raise size. Calls are capped by the stack and eligible pots account for short stacks.
-- Weight sampled opponent hands using public calls/raises and bet size relative to the pot before the action. Retain the latest action street and strongest earlier street, using the board visible at each action; stronger aggression favors plausible value hands while leaving weak hands possible.
-- Apply a modest additional caution margin after repeated current-street raises or large bets. State is local to a decision; the bot does not learn across tables.
+- Use three-card strength percentiles for position- and stack-dependent preflop openings. Defensive hands must pass an ordinal strength gate and a simulated-equity/pot-odds check; weak calls cannot fall through into a generic reraise.
+- Handle heads-up positions, busted-seat gaps, limpers, current blinds, short stacks, and all-in prices explicitly. Keep inexpensive short-stack continuations available.
+- Compare all three retained pairs after the flop using shared simulated runouts. Break exact equity ties by current made-hand strength; a strictly higher-equity draw stays primary. Expose the retained card less connected to the board, as an information heuristic.
+- Sample 16–24 possible showdowns. Fix each live opponent's exposed card in its hand and remove every known public card, including folded players' exposed cards, plus the bot's own discard from the remaining deck.
+- Weight opponent hands using public calls/raises and historical bet sizes. Add caution under large bets, reraises, and repeated barrels; apply a separate gate to weak reraises. Value-raise sizing uses 62% of the pot after calling, subject to legal and stack limits.
 
-This is a deliberately simple chip-EV heuristic, not a GTO or ICM solution. Unknown opponent cards are sampled uniformly, conditional on exposed cards, then complete worlds are weighted by action likelihood heuristics. Those likelihoods are not calibrated to real opponents; a positive weak-hand floor is not a known bluff frequency. Opponent discard skill is not modeled. The small sample budget can produce noisy equity estimates, especially with several strongly weighted opponents. The raise model assumes live opponents continue and assigns no fold equity. Preflop it estimates the best fixed retained pair rather than valuing every later selection opportunity.
+The percentile ordering comes from the reviewed teammate asset; **its full jam/call bucket arrays are bundled but unused**. Opening and defense thresholds are heuristics, not the solver's policy, GTO, or ICM. Action likelihoods are also uncalibrated, and the small sample budget can give noisy estimates. The raise model assumes opponents continue and assigns no fold equity. There is no learning across tables.
 
 ## Setup
 
@@ -44,6 +45,7 @@ On macOS, the kit's LightGBM/XGBoost dependencies may also require the OpenMP ru
   --fixtures-in reports/fixtures.json --report reports/equity-invariants.json
 "$POKER_PY" tools/check_discard.py agent.py
 "$POKER_PY" tools/check_range_model.py agent.py
+"$POKER_PY" tools/check_integrated_preflop.py agent.py
 "$POKER_PY" tools/no_bank_check.py . "$POKER_KIT/examples/check_or_fold" \
   --tables 10 --hand-cap 20 --report reports/no-bank.json
 "$POKER_KIT/.venv/bin/poker-agent" play . \
@@ -52,6 +54,19 @@ On macOS, the kit's LightGBM/XGBoost dependencies may also require the OpenMP ru
 ```
 
 The validation harness generates real-engine states spanning 2, 3, 8, and 10 players; selection, all betting streets, short calls, and all-in selections. The no-bank probe uses the normal guest process protocol with a 1 ms decision allowance and zero time bank. Its local result does not replace the server's upload validation.
+
+## Package the submission
+
+Stage only the two runtime files, then run the kit packer and checker:
+
+```sh
+mkdir -p .local/bot reports
+cp agent.py preflop_policy.json .local/bot/
+"$POKER_KIT/.venv/bin/poker-agent" pack .local/bot reports/tight-v4.zip
+"$POKER_KIT/.venv/bin/poker-agent" check reports/tight-v4.zip
+```
+
+Both files must remain together for local tests and production. The JSON asset's SHA-256 is `8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98`.
 
 ## Benchmark eight-player tables
 
@@ -71,7 +86,7 @@ Default bots are intentionally weak. Scores against them are diagnostic benchmar
 
 ## Recorded benchmark results (historical v1)
 
-These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current v3 source. See [v3 validation](validation/v3.md) for correctness and runtime checks, and [v2 validation](validation/v2.md) for the earlier public-card correction.
+These results measure the original v1 source (SHA-256 `61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f`), before exposed-card conditioning. They are not measurements of the current tight v4 source. See [v4 validation](validation/v4.md) for its correctness and runtime checks, [v3 validation](validation/v3.md) for the earlier action model, and [v2 validation](validation/v2.md) for exposed-card conditioning.
 
 The initial batch ran 200 eight-player tables per scenario, with the same mixed-field seeds and seating used for the original-template comparison:
 
@@ -88,7 +103,7 @@ See [the aggregate report](benchmarks/public-summary.md) for confidence interval
 
 ## Research reviews
 
-The [preflop jam/fold review](docs/preflop-jamfold-review.md) records the inspected branch snapshot, model assumptions, missing policy exports, and checks needed before integrating that research. The current bot remains the validated v3 source described above.
+The [preflop jam/fold review](docs/preflop-jamfold-review.md) records the inspected branch snapshot, model assumptions, missing policy exports, and checks needed before integrating that research. Tight v4 uses the reviewed three-card percentile ordering with an explicitly heuristic policy; the solver jam/call arrays remain unused.
 
 ## Data handling
 
