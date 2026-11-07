@@ -1,0 +1,17 @@
+{
+  "base_commit": "513de720a415e50cd86a13403e5fb6ed11401905",
+  "baseline_agent_sha256": "ab7fa0462a7d2b783c7bd90ad6b3f7fab53c1914b1ac2a3ee76cd1053484abbc",
+  "variant": "premium-64-b",
+  "description": "64 draws for premium hands facing a small first open",
+  "runtime_files": {
+    "agent.py": "2f5a92866b3aebde2a1a8094613592c781bd8ab1ad7901dda7b4298a945da69a",
+    "point_value.py": "6bbe4e226c71d77c1101b6348b1f8372c702eb61136c0fd7436ba7433848597c",
+    "preflop_policy.json": "8f7f0a9c425aa496f6a1eabaa83fbc526ea01482152e11a52e2896006b1ade98"
+  },
+  "focus_checks_shared": {
+    "assertions": 516,
+    "generated_engine_states": 248,
+    "natural_premium_routes": 10
+  },
+  "status": "Research candidate; no upload or promotion"
+}

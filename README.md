@@ -20,6 +20,13 @@ The runtime bundle requires **`agent.py`, `point_value.py`, and `preflop_policy.
 together. Candidate source SHA-256:
 `a5f142c613f82d6e7aca11b52aa1e7e0bcbfb3b7c4a5f0914383f74b68c21cc0`.
 
+Two separate research trials are preserved under
+[`research/preflop-defense`](research/preflop-defense/README.md): **B** gives premium
+hands 64 equity samples against small opens; **C** proposes a normal-sized premium
+3-bet. Each starts independently from frozen v8 and does not include candidate A.
+Their focused checks pass; strategy strength is unproven and further proxy-field
+testing is pending. The root runtime remains candidate A.
+
 ## Historical v6 documentation
 
 The sections below describe historical baselines. Their two-file packaging commands
