@@ -1,0 +1,25 @@
+# Local environments and generated Python files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.DS_Store
+
+# Private inputs and raw match output
+.env
+.env.*
+.local/
+data/
+reports/
+hand-history/
+*.jsonl
+*.jsonl.gz
+*.log
+
+# Credentials and keys
+*.pem
+*.key
+id_ed25519*
+id_rsa*
+api-key*

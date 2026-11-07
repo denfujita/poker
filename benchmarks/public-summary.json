@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "title": "Basic equity v1: aggregate local eight-player benchmarks",
+  "scope": "local_simulation_only",
+  "date": "2026-11-06",
+  "rules": {
+    "variant": "flop_discard_reveal",
+    "players": 8,
+    "starting_stack": 2000,
+    "hands_per_level": 20,
+    "hand_cap": 250,
+    "decision_ms": 1,
+    "time_bank_ms": 100,
+    "memory_bytes": 65536,
+    "resampling_continuations": 1,
+    "icm_luck_correction": false,
+    "blinds": [
+      [
+        10,
+        20,
+        0
+      ],
+      [
+        20,
+        40,
+        0
+      ],
+      [
+        30,
+        60,
+        0
+      ],
+      [
+        50,
+        100,
+        0
+      ],
+      [
+        80,
+        160,
+        0
+      ],
+      [
+        125,
+        250,
+        0
+      ],
+      [
+        200,
+        400,
+        0
+      ],
+      [
+        300,
+        600,
+        0
+      ],
+      [
+        500,
+        1000,
+        0
+      ],
+      [
+        800,
+        1600,
+        0
+      ],
+      [
+        1200,
+        2400,
+        0
+      ],
+      [
+        2000,
+        4000,
+        0
+      ]
+    ],
+    "payouts": [
+      50,
+      30,
+      20
+    ],
+    "points_per_table": 100,
+    "payouts_vary_by_table": false,
+    "hand_cap_scoring": "ICM on remaining stacks; no table in this batch reached the cap."
+  },
+  "bot_sha256": {
+    "check_or_fold": "2914ffface89473f6a1a75ed8a12ec80f0029d26a5411048feb4b967e1c47230",
+    "basic_equity_v1": "61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f",
+    "min_raiser": "48f85f7554e3b56abd3ddd4968e28ab92dfe6e89371ed0d7e5842a8b903db369",
+    "starter_template": "02468a80cc34cc427a289d61d6833e534831cd1d4da4ad09c619b7e7e635c1b3"
+  },
+  "scenarios": [
+    {
+      "id": "mixed",
+      "label": "Basic equity vs mixed defaults",
+      "hero": "basic_equity_v1",
+      "hero_sha256": "61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f",
+      "opponent_counts": {
+        "check_or_fold": 3,
+        "min_raiser": 4
+      },
+      "seed": "basic-equity-v1-mixed-batch1",
+      "tables": 200,
+      "concurrency": 4,
+      "mean_points": 26.5,
+      "sample_sd_points": 25.01758175733467,
+      "standard_error_points": 1.769010170950021,
+      "mean_points_normal_ci95": [
+        23.032803776652916,
+        29.967196223347084
+      ],
+      "mean_points_ci_degenerate": false,
+      "outright_win": {
+        "count": 106,
+        "rate": 0.53,
+        "ci95_wilson": [
+          0.4609168291500183,
+          0.5979524512673458
+        ]
+      },
+      "first_place_including_ties": {
+        "count": 106,
+        "rate": 0.53,
+        "ci95_wilson": [
+          0.4609168291500183,
+          0.5979524512673458
+        ]
+      },
+      "top_three_rank_including_ties": {
+        "count": 106,
+        "rate": 0.53,
+        "ci95_wilson": [
+          0.4609168291500183,
+          0.5979524512673458
+        ]
+      },
+      "positive_points": {
+        "count": 106,
+        "rate": 0.53,
+        "ci95_wilson": [
+          0.4609168291500183,
+          0.5979524512673458
+        ]
+      },
+      "finishing_positions": {
+        "1": 106,
+        "5": 90,
+        "6": 4
+      },
+      "failed_decisions": 0,
+      "decisions": 22221,
+      "all_entries_failed_decisions": 0,
+      "all_entries_decisions": 119295,
+      "average_hands": 107.685,
+      "hand_cap_count": 0,
+      "points_conserved_each_table": true,
+      "stacks_conserved_each_table": true
+    },
+    {
+      "id": "template-mixed",
+      "label": "Original template vs mixed defaults",
+      "hero": "starter_template",
+      "hero_sha256": "02468a80cc34cc427a289d61d6833e534831cd1d4da4ad09c619b7e7e635c1b3",
+      "opponent_counts": {
+        "check_or_fold": 3,
+        "min_raiser": 4
+      },
+      "seed": "basic-equity-v1-mixed-batch1",
+      "tables": 200,
+      "concurrency": 4,
+      "mean_points": 12.25,
+      "sample_sd_points": 13.240621977526539,
+      "standard_error_points": 0.936253358743665,
+      "mean_points_normal_ci95": [
+        10.414977136457757,
+        14.085022863542243
+      ],
+      "mean_points_ci_degenerate": false,
+      "outright_win": {
+        "count": 0,
+        "rate": 0.0,
+        "ci95_wilson": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ]
+      },
+      "first_place_including_ties": {
+        "count": 0,
+        "rate": 0.0,
+        "ci95_wilson": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ]
+      },
+      "top_three_rank_including_ties": {
+        "count": 96,
+        "rate": 0.48,
+        "ci95_wilson": [
+          0.411791663783233,
+          0.5489621492718576
+        ]
+      },
+      "positive_points": {
+        "count": 96,
+        "rate": 0.48,
+        "ci95_wilson": [
+          0.411791663783233,
+          0.5489621492718576
+        ]
+      },
+      "finishing_positions": {
+        "2": 53,
+        "3": 43,
+        "4": 57,
+        "5": 47
+      },
+      "failed_decisions": 0,
+      "decisions": 19370,
+      "all_entries_failed_decisions": 0,
+      "all_entries_decisions": 119302,
+      "average_hands": 100.475,
+      "hand_cap_count": 0,
+      "points_conserved_each_table": true,
+      "stacks_conserved_each_table": true
+    },
+    {
+      "id": "passive",
+      "label": "Basic equity vs 7 check-or-fold bots",
+      "hero": "basic_equity_v1",
+      "hero_sha256": "61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f",
+      "opponent_counts": {
+        "check_or_fold": 7,
+        "min_raiser": 0
+      },
+      "seed": "basic-equity-v1-passive-batch1",
+      "tables": 200,
+      "concurrency": 4,
+      "mean_points": 50.0,
+      "sample_sd_points": 0.0,
+      "standard_error_points": 0.0,
+      "mean_points_normal_ci95": [
+        50.0,
+        50.0
+      ],
+      "mean_points_ci_degenerate": true,
+      "outright_win": {
+        "count": 200,
+        "rate": 1.0,
+        "ci95_wilson": [
+          0.9811546736227335,
+          1.0
+        ]
+      },
+      "first_place_including_ties": {
+        "count": 200,
+        "rate": 1.0,
+        "ci95_wilson": [
+          0.9811546736227335,
+          1.0
+        ]
+      },
+      "top_three_rank_including_ties": {
+        "count": 200,
+        "rate": 1.0,
+        "ci95_wilson": [
+          0.9811546736227335,
+          1.0
+        ]
+      },
+      "positive_points": {
+        "count": 200,
+        "rate": 1.0,
+        "ci95_wilson": [
+          0.9811546736227335,
+          1.0
+        ]
+      },
+      "finishing_positions": {
+        "1": 200
+      },
+      "failed_decisions": 0,
+      "decisions": 43197,
+      "all_entries_failed_decisions": 0,
+      "all_entries_decisions": 260050,
+      "average_hands": 176.05,
+      "hand_cap_count": 0,
+      "points_conserved_each_table": true,
+      "stacks_conserved_each_table": true,
+      "mean_points_ci_warning": "All 200 observed scores were 50. The empirical normal interval [50,50] is degenerate and does not establish zero uncertainty or a guaranteed win. The win-rate Wilson interval remains below 100% at its lower endpoint."
+    },
+    {
+      "id": "aggressive",
+      "label": "Basic equity vs 7 minimum-raisers",
+      "hero": "basic_equity_v1",
+      "hero_sha256": "61033f38526fcfe6591387efb8f9f376a0d7a3f2fe51c5b6835b1ffd8c69cb7f",
+      "opponent_counts": {
+        "check_or_fold": 0,
+        "min_raiser": 7
+      },
+      "seed": "basic-equity-v1-aggressive-batch1",
+      "tables": 200,
+      "concurrency": 4,
+      "mean_points": 36.07857142857143,
+      "sample_sd_points": 14.313443416165978,
+      "standard_error_points": 1.0121132901700904,
+      "mean_points_normal_ci95": [
+        34.094865831563716,
+        38.06227702557914
+      ],
+      "mean_points_ci_degenerate": false,
+      "outright_win": {
+        "count": 89,
+        "rate": 0.445,
+        "ci95_wilson": [
+          0.3778060100295335,
+          0.5142669758719658
+        ]
+      },
+      "first_place_including_ties": {
+        "count": 89,
+        "rate": 0.445,
+        "ci95_wilson": [
+          0.3778060100295335,
+          0.5142669758719658
+        ]
+      },
+      "top_three_rank_including_ties": {
+        "count": 200,
+        "rate": 1.0,
+        "ci95_wilson": [
+          0.9811546736227335,
+          1.0
+        ]
+      },
+      "positive_points": {
+        "count": 200,
+        "rate": 1.0,
+        "ci95_wilson": [
+          0.9811546736227335,
+          1.0
+        ]
+      },
+      "finishing_positions": {
+        "1": 89,
+        "2": 103,
+        "3": 8
+      },
+      "failed_decisions": 0,
+      "decisions": 6433,
+      "all_entries_failed_decisions": 0,
+      "all_entries_decisions": 35407,
+      "average_hands": 5,
+      "hand_cap_count": 0,
+      "points_conserved_each_table": true,
+      "stacks_conserved_each_table": true
+    }
+  ],
+  "paired_mixed_comparison": {
+    "comparison": "basic_equity_v1 minus starter_template in the same mixed default-bot field",
+    "pairs": 200,
+    "matched_by": "table_index",
+    "seed": "basic-equity-v1-mixed-batch1",
+    "table_seeds_matched": true,
+    "entry_seating_matched": true,
+    "mean_difference_points": 14.25,
+    "sample_sd_difference_points": 28.73265262089746,
+    "standard_error_difference_points": 2.0317053509714023,
+    "difference_normal_ci95": [
+      10.267930684898742,
+      18.23206931510126
+    ],
+    "candidate_higher_points_count": 106,
+    "equal_points_count": 47,
+    "candidate_lower_points_count": 47,
+    "interpretation": "The initial seed and seating match within each pair. Later trajectories can diverge because strategies take different actions."
+  },
+  "verification": {
+    "tables_checked": 800,
+    "unique_table_indices_per_scenario": 200,
+    "points_per_table": 100,
+    "maximum_points_conservation_error": 0.0,
+    "chips_per_table": 16000,
+    "maximum_chip_conservation_error": 0.0,
+    "source_summary_metrics_recomputed_and_matched": true,
+    "source_bot_files_unchanged": true,
+    "all_entries_failed_decisions": 0,
+    "all_entries_decisions": 534054
+  },
+  "statistical_notes": [
+    "Aggregate local simulations only. No live tournament results, account data, or hand histories are included.",
+    "The independent sampling unit is a table; intervals are unadjusted 95% intervals.",
+    "Mean-points intervals use mean +/- 1.95996398454 times sample SD / sqrt(number of tables).",
+    "Win and finish-rate intervals use the Wilson binomial formula.",
+    "Points come from the official scoring function, including tied-bust payout sharing and ICM at the hand cap; they are not inferred from finish counts.",
+    "Tied finishing ranks can cause more than three entries to have rank <=3. Top-three rank is not a count of distinct paid slots.",
+    "Repeated default bots within one table are not independent observations; the effective sample size for the hero is 200 tables per scenario.",
+    "The passive scenario has a degenerate empirical mean interval because every observed score was 50. Its 200/200 wins do not prove a guaranteed 100% win rate.",
+    "These fixed, weak reference-bot fields do not predict performance against the unknown live tournament field.",
+    "The scenarios are reported separately rather than pooled into a single tournament-performance estimate."
+  ]
+}
